@@ -16,5 +16,9 @@ export class CreateTableUser1696620917168 implements MigrationInterface {
         `);
   }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {}
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    queryRunner.query(`
+        drop table public.user
+    `)
+  }
 }
