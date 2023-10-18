@@ -13,6 +13,18 @@ export class CreateTableUser1696620917168 implements MigrationInterface {
                 "password" varchar(30) NOT NULL,
                 "type" int4 NOT NULL
             );
+
+            CREATE SEQUENCE public.user_id_seq
+              AS integer
+              START WITH 1
+              INCREMENT BY 1
+              NO MINVALUE
+              NO MAXVALUE
+              CACHE 1;
+
+            ALTER SEQUENCE public.user_id_seq OWNED BY public.user.id;
+            
+            ALTER TABLE ONLY public.user ALTER COLUMN id SET DEFAULT nextval('public.user_id_seq'::regclass);
         `);
   }
 

@@ -12,6 +12,12 @@ Engenharia de Software.
 $ npm install
 ```
 
+## Running migration
+
+```bash
+$ 
+```
+
 ## Running the app
 
 ```bash
