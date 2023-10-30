@@ -5,6 +5,9 @@ import { AppService } from './app.service';
 import { getEnvPath } from './common/helper/env.helper';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './common/typeorm/typeorm.service';
+import { UserModule } from './models/public/user/user.module';
+import { AuthModule } from './auth/auth.module';
+import { TokenModule } from './token/token.module';
 
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
@@ -12,8 +15,11 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
   imports: [
     ConfigModule.forRoot({ envFilePath, isGlobal: true }),
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
+    AuthModule,
+    TokenModule,
+    UserModule
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
