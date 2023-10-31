@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Point } from './entities/point.entity';
 import { CreatePointDto } from './dto/createPoint.dto';
+import { UpdatePointDto } from './dto/updatePoint.dto';
 
 @Injectable()
 export class PointService {
@@ -27,6 +28,19 @@ export class PointService {
         newPoint.user = point.user;
 
         return this.repository.save(newPoint)
+    }
+
+    async update(updatePointDto: UpdatePointDto) {
+
+        const point = await this.repository.findOne({ where: { id: updatePointDto.id } });
+
+        if (!point) {
+            throw new NotFoundException(`Point ID ${updatePointDto.id} not found`);
+        }
+
+        await this.repository.update({ id: updatePointDto.id }, updatePointDto)
+
+        return updatePointDto;
     }
 
     async delete(id: number) {

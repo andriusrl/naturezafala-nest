@@ -6,12 +6,14 @@ import {
     Param,
     Post,
     UseGuards,
-    Delete
+    Delete,
+    Patch
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { PointService } from './point.service';
 import { Point } from './entities/point.entity';
 import { CreatePointDto } from './dto/createPoint.dto';
+import { UpdatePointDto } from './dto/updatePoint.dto';
 
 @Controller('point')
 export class PointController {
@@ -30,6 +32,14 @@ export class PointController {
         @Body() point: CreatePointDto,
     ) {
         return this.service.createPoint(point);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Patch('')
+    updatePoint(
+        @Body() point: UpdatePointDto,
+    ) {
+        return this.service.update(point);
     }
 
     @UseGuards(AuthGuard('jwt'))
