@@ -8,6 +8,7 @@ import { TypeOrmConfigService } from './common/typeorm/typeorm.service';
 import { UserModule } from './models/public/user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { TokenModule } from './token/token.module';
+import { PointModule } from './models/public/point/point.module';
 
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
@@ -17,7 +18,8 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     AuthModule,
     TokenModule,
-    UserModule
+    UserModule,
+    PointModule
   ],
   controllers: [AppController],
   providers: [AppService],
