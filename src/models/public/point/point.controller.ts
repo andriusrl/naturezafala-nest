@@ -3,8 +3,10 @@ import {
     Controller,
     Get,
     Inject,
+    Param,
     Post,
     UseGuards,
+    Delete
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { PointService } from './point.service';
@@ -28,6 +30,14 @@ export class PointController {
         @Body() point: CreatePointDto,
     ) {
         return this.service.createPoint(point);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Delete('/:id')
+    deleteFile(
+        @Param('id') id,
+    ) {
+        return this.service.delete(+id);
     }
 
 }
