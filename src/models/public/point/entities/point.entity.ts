@@ -20,7 +20,7 @@ export class Point {
     date: Date;
 
     @Column({ type: 'int4' })
-    user: string;
+    user: number;
 
     @Column({ type: 'int4' })
     latitude: number;
