@@ -12,12 +12,6 @@ Engenharia de Software.
 $ npm install
 ```
 
-## Running migration
-
-```bash
-$ 
-```
-
 ## Running the app
 
 ```bash
@@ -29,6 +23,19 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+```
+
+## Running migration
+
+```bash
+$ 
+```
+
+## Create migration
+
+```bash
+typeorm migration:create src/migrations/name
+$ 
 ```
 
 ## Test
