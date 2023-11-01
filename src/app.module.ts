@@ -9,7 +9,7 @@ import { UserModule } from './models/public/user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { TokenModule } from './token/token.module';
 import { PointModule } from './models/public/point/point.module';
-import { CommentModule } from './models/public/comment/point.module';
+import { CommentModule } from './models/public/comment/comment.module';
 
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
