@@ -1,22 +1,16 @@
 import { IsDateString, IsNumber, IsString, MaxLength } from 'class-validator';
 
-export class CreatePointDto {
+export class CreateCommentDto {
     @IsString()
-    @MaxLength(255)
-    name: string;
-
-    @IsString()
-    description: string;
+    // @MaxLength(255)
+    comment: string;
 
     @IsDateString()
     date: Date;
 
     @IsNumber()
     user: number;
-
+    
     @IsNumber()
-    latitude: number;
-
-    @IsNumber()
-    longitude: number;
+    point: number;
 }

@@ -1,8 +1,8 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsNumber } from 'class-validator';
-import { CreatePointDto } from './createPoint.dto';
+import { CreateCommentDto } from './createComment.dto';
 
-export class UpdatePointDto extends PartialType(CreatePointDto) {
+export class UpdatePointDto extends PartialType(CreateCommentDto) {
   @ApiProperty()
   @IsNumber()
   id: number;

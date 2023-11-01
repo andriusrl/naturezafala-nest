@@ -15,6 +15,9 @@ export class Comment {
     @Column({ type: 'int4' })
     point: number;
 
+    @Column({ type: 'timestamp' })
+    date: Date;
+
     @Column({ type: 'int4' })
     user: number;
 }
