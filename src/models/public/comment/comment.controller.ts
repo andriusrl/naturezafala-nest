@@ -3,6 +3,7 @@ import {
     Controller,
     Get,
     Inject,
+    Patch,
     Post,
     UseGuards,
 } from '@nestjs/common';
@@ -10,6 +11,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { CommentService } from './comment.service';
 import { Comment } from './entities/comment.entity';
 import { CreateCommentDto } from './dto/createComment.dto';
+import { UpdateCommentDto } from './dto/updateComment.dto';
 
 @Controller('comment')
 export class CommentController {
@@ -27,6 +29,14 @@ export class CommentController {
     createPoint(
         @Body() comment: CreateCommentDto,
     ) {
-        return this.service.createComment(comment);
+        return this.service.create(comment);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Patch('')
+    updatePoint(
+        @Body() comment: UpdateCommentDto,
+    ) {
+        return this.service.update(comment);
     }
 }
