@@ -24,4 +24,14 @@ export class ImageService {
 
         return this.repository.save(newImage)
     }
+
+    async delete(id: number) {
+        const image = await this.repository.findOne({ where: { id } });
+
+        if (!image) {
+            throw new NotFoundException(`Image ID ${id} not found`);
+        }
+
+        return this.repository.remove(image);
+    }
 }

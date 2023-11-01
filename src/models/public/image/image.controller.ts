@@ -32,4 +32,12 @@ export class ImageController {
     ) {
         return this.service.create(image);
     }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Delete('/:id')
+    delete(
+        @Param('id') id,
+    ) {
+        return this.service.delete(+id);
+    }
 }
