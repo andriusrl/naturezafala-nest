@@ -1,8 +1,10 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     Inject,
+    Param,
     Patch,
     Post,
     UseGuards,
@@ -38,5 +40,13 @@ export class CommentController {
         @Body() comment: UpdateCommentDto,
     ) {
         return this.service.update(comment);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Delete('/:id')
+    deleteFile(
+        @Param('id') id,
+    ) {
+        return this.service.delete(+id);
     }
 }

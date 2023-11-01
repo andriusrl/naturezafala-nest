@@ -40,4 +40,14 @@ export class CommentService {
 
         return updateCommentDto;
     }
+
+    async delete(id: number) {
+        const comment = await this.repository.findOne({ where: { id } });
+
+        if (!comment) {
+            throw new NotFoundException(`Comment ID ${id} not found`);
+        }
+
+        return this.repository.remove(comment);
+    }
 }
