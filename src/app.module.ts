@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { TokenModule } from './token/token.module';
 import { PointModule } from './models/public/point/point.module';
 import { CommentModule } from './models/public/comment/comment.module';
+import { ImageModule } from './models/public/image/image.module';
 
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
@@ -21,7 +22,8 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     TokenModule,
     UserModule,
     PointModule,
-    CommentModule
+    CommentModule,
+    ImageModule
   ],
   controllers: [AppController],
   providers: [AppService],
