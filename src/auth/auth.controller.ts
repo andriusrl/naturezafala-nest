@@ -12,12 +12,14 @@ import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
 import { LoginUserDto } from './dto/login-user.dto';
+import { AccessService } from 'src/access/access.service';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
     constructor(
         private readonly authService: AuthService,
+        private readonly accessService: AccessService,
     ) { }
 
     @UseGuards(AuthGuard('local'))
@@ -25,6 +27,9 @@ export class AuthController {
     @HttpCode(200)
     async login(@Ip() ip, @Body() loginUserDto: LoginUserDto) {
         const response = await this.authService.login(loginUserDto);
+
+        await this.accessService.create(1,'Login', response.token, ip);
+
         return response;
     }
 }

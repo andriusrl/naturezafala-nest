@@ -11,6 +11,7 @@ import { TokenModule } from './token/token.module';
 import { PointModule } from './models/public/point/point.module';
 import { CommentModule } from './models/public/comment/comment.module';
 import { ImageModule } from './models/public/image/image.module';
+import { AccessModule } from './access/access.module';
 
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
@@ -19,6 +20,7 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     ConfigModule.forRoot({ envFilePath, isGlobal: true }),
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     AuthModule,
+    AccessModule,
     TokenModule,
     UserModule,
     PointModule,

@@ -1,6 +1,9 @@
+import { User } from 'src/models/public/user/entities/user.entity';
 import {
     Column,
     Entity,
+    JoinColumn,
+    OneToOne,
     PrimaryColumn,
 } from 'typeorm';
 
@@ -13,6 +16,7 @@ export class TokenEntity {
     hash: string;
 
     @Column({ type: 'int4' })
-
+    @OneToOne(() => User, (user) => user.id)
+    @JoinColumn({ name: 'user'})
     user: number;
 }

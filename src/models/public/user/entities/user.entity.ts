@@ -1,3 +1,5 @@
+import Access from 'src/access/entities/access.entity';
+import { TokenEntity } from 'src/token/token.entity';
 import {
     Column,
     Entity,
@@ -29,5 +31,4 @@ export class User {
 
     @Column({ type: 'varchar', length: 30 })
     public password?: string;
-
 }

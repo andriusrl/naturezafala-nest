@@ -10,6 +10,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { TokenModule } from '../token/token.module';
 import { User } from 'src/models/public/user/entities/user.entity';
+import { AccessModule } from 'src/access/access.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { User } from 'src/models/public/user/entities/user.entity';
     UserModule,
     PassportModule,
     forwardRef(() => TokenModule),
+    forwardRef(() => AccessModule),
     JwtModule.register({
       privateKey: process.env.PRIVATE_KEY,
       signOptions: {
@@ -29,4 +31,4 @@ import { User } from 'src/models/public/user/entities/user.entity';
   controllers: [AuthController],
   exports: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule { }

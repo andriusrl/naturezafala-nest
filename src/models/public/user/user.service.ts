@@ -20,14 +20,24 @@ export class UserService {
             });
 
             return response;
-        } else {
-            const response = this.repository.findOne({
-                where: {
-                    email: user.email,
-                },
-            });
-
-            return response;
         }
+        const response = this.repository.findOne({
+            where: {
+                email: user.email,
+            },
+        });
+
+        return response;
+
+    }
+
+    async findOneByEmail(email: string): Promise<User> {
+        const response = this.repository.findOne({
+            where: {
+                email
+            },
+        });
+
+        return response;
     }
 }

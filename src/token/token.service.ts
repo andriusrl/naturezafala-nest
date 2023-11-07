@@ -18,8 +18,6 @@ export class TokenService {
         @InjectRepository(TokenEntity)
         private tokenRepository: Repository<TokenEntity>,
         private userService: UserService,
-        @Inject(forwardRef(() => AuthService))
-        private authService: AuthService,
     ) { }
 
     async save(hash: string, username: string) {
@@ -27,9 +25,7 @@ export class TokenService {
         let objToken;
         try {
 
-            const usernameResponse = await this.userService.findOne({
-                email: username,
-            });
+            const usernameResponse = await this.userService.findOneByEmail(username);
 
             objToken = await this.tokenRepository.findOne({
                 where: {
@@ -56,27 +52,6 @@ export class TokenService {
         }
     }
 
-    async refreshToken(oldToken: string) {
-        const objToken = await this.tokenRepository.findOne({
-            where: {
-                hash: oldToken,
-            },
-        });
-
-        if (objToken) {
-            const user = await this.userService.findOne({ id: objToken.user });
-
-            return await this.authService.login(user, true);
-        } else {
-            return new HttpException(
-                {
-                    errorMessage: 'Token invalidado',
-                },
-                HttpStatus.UNAUTHORIZED,
-            );
-        }
-    }
-
     async findOne(token) {
         if (token.includes('Bearer')) {
             return await this.tokenRepository.findOne({
@@ -91,8 +66,9 @@ export class TokenService {
             .select([
                 'tk.id as id',
                 'tk.hash as hash',
-                'user as user',
-                'user.nome as user_nome',
+                'tk.user as user',
+                'user.name as user_name',
+                'user.email as user_email',
             ])
             .where('tk.hash = :token', { token })
             .leftJoin('tk.user', 'user');
