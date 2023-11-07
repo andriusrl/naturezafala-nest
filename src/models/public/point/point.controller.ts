@@ -1,4 +1,5 @@
 import {
+    Headers,
     Body,
     Controller,
     Get,
@@ -7,18 +8,24 @@ import {
     Post,
     UseGuards,
     Delete,
-    Patch
+    Patch,
+    Ip
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { PointService } from './point.service';
 import { Point } from './entities/point.entity';
 import { CreatePointDto } from './dto/createPoint.dto';
 import { UpdatePointDto } from './dto/updatePoint.dto';
+import { AccessService } from 'src/access/access.service';
+import { AccessHelper } from 'src/helpers/access.helper';
 
 @Controller('point')
 export class PointController {
-    @Inject(PointService)
-    private readonly service: PointService;
+    constructor(
+        @Inject(PointService)
+        private readonly service: PointService,
+        private readonly accessService: AccessService,
+    ) { }
 
     @UseGuards(AuthGuard('jwt'))
     @Get('/')
@@ -28,10 +35,17 @@ export class PointController {
 
     @UseGuards(AuthGuard('jwt'))
     @Post('')
-    createPoint(
+    async createPoint(
+        @Headers('authorization') authorization: string,
+        @Ip() ip,
         @Body() point: CreatePointDto,
     ) {
-        return this.service.createPoint(point);
+
+        const response = this.service.createPoint(point);
+
+        await this.accessService.create(AccessHelper.ACTION.ADDED, 'point', authorization, ip);
+
+        return response
     }
 
     @UseGuards(AuthGuard('jwt'))

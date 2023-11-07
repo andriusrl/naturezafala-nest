@@ -29,7 +29,7 @@ export class AuthController {
     async login(@Ip() ip, @Body() loginUserDto: LoginUserDto) {
         const response = await this.authService.login(loginUserDto);
 
-        await this.accessService.create(AccessHelper.ACTION.LOGOU, 'Login', response.token, ip);
+        await this.accessService.create(AccessHelper.ACTION.LOGGED, 'Login', response.token, ip);
 
         return response;
     }

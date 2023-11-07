@@ -1,9 +1,9 @@
 export const AccessHelper = {
     ACTION: {
-        LOGOU: 1,
-        VISUALIZOU: 2,
-        ADICIONOU: 3,
-        MODIFICOU: 4,
-        EXCLUIU: 5,
+        LOGGED: 1,
+        VIEWED: 2,
+        ADDED: 3,
+        UPDATE: 4,
+        DELETE: 5,
     }
 }
