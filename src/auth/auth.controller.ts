@@ -13,6 +13,7 @@ import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
 import { LoginUserDto } from './dto/login-user.dto';
 import { AccessService } from 'src/access/access.service';
+import { AccessHelper } from 'src/helpers/access.helper';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -28,7 +29,7 @@ export class AuthController {
     async login(@Ip() ip, @Body() loginUserDto: LoginUserDto) {
         const response = await this.authService.login(loginUserDto);
 
-        await this.accessService.create(1,'Login', response.token, ip);
+        await this.accessService.create(AccessHelper.ACTION.LOGOU, 'Login', response.token, ip);
 
         return response;
     }
