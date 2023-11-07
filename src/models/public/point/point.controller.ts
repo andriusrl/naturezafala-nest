@@ -50,18 +50,28 @@ export class PointController {
 
     @UseGuards(AuthGuard('jwt'))
     @Patch('')
-    updatePoint(
+    async updatePoint(
+        @Headers('authorization') authorization: string,
+        @Ip() ip,
         @Body() point: UpdatePointDto,
     ) {
-        return this.service.update(point);
+        const response = await this.service.update(point);
+        await this.accessService.create(AccessHelper.ACTION.UPDATE, 'point', authorization, ip);
+        return response
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Delete('/:id')
-    deleteFile(
+    async deleteFile(
+        @Headers('authorization') authorization: string,
+        @Ip() ip,
         @Param('id') id,
     ) {
-        return this.service.delete(+id);
+        const response = await this.service.delete(+id);
+
+        await this.accessService.create(AccessHelper.ACTION.DELETE, 'point', authorization, ip);
+
+        return response
     }
 
 }
