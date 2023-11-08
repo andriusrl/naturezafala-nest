@@ -41,7 +41,7 @@ export class PointService {
 
         const objPromise = await Promise.all([objToken, point]);
 
-        if(objPromise[0].user !== objPromise[1].user) {
+        if (objPromise[0].user !== objPromise[1].user) {
             throw new NotFoundException(`Not authorized`);
         }
 
@@ -54,8 +54,17 @@ export class PointService {
         return updatePointDto;
     }
 
-    async delete(id: number) {
+    async delete(id: number, authorization: string) {
+
+        const objToken = this.TokenService.findOne(authorization);
+
         const point = await this.repository.findOne({ where: { id } });
+
+        const objPromise = await Promise.all([objToken, point]);
+
+        if (objPromise[0].user !== objPromise[1].user) {
+            throw new NotFoundException(`Not authorized`);
+        }
 
         if (!point) {
             throw new NotFoundException(`Point ID ${id} not found`);

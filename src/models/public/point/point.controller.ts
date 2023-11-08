@@ -68,7 +68,7 @@ export class PointController {
         @Ip() ip,
         @Param('id') id,
     ) {
-        const response = await this.service.delete(+id);
+        const response = await this.service.delete(+id, authorization);
 
         await this.accessService.create(AccessHelper.ACTION.DELETE, 'point', authorization, ip);
 
