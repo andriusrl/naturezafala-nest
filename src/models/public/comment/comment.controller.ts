@@ -43,29 +43,35 @@ export class CommentController {
         const response = await this.service.create(comment, authorization);
 
         await this.accessService.create(AccessHelper.ACTION.ADDED, 'comment', authorization, ip);
-        
+
         return response;
     }
-    
+
     @UseGuards(AuthGuard('jwt'))
     @Patch('')
     async update(
         @Headers('authorization') authorization: string,
         @Ip() ip,
         @Body() comment: UpdateCommentDto,
-        ) {
-            const response = await this.service.update(comment, authorization);
-            
-            await this.accessService.create(AccessHelper.ACTION.ADDED, 'comment', authorization, ip);
-            
-            return response;
+    ) {
+        const response = await this.service.update(comment, authorization);
+
+        await this.accessService.create(AccessHelper.ACTION.UPDATE, 'comment', authorization, ip);
+
+        return response;
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Delete('/:id')
-    deleteFile(
+    async deleteFile(
+        @Headers('authorization') authorization: string,
+        @Ip() ip,
         @Param('id') id,
     ) {
-        return this.service.delete(+id);
+        const response = await this.service.delete(+id, authorization);
+
+        await this.accessService.create(AccessHelper.ACTION.UPDATE, 'comment', authorization, ip);
+
+        return response;
     }
 }
