@@ -1,4 +1,5 @@
 import {
+    Headers,
     Body,
     Controller,
     Delete,
@@ -8,17 +9,23 @@ import {
     Patch,
     Post,
     UseGuards,
+    Ip
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CommentService } from './comment.service';
 import { Comment } from './entities/comment.entity';
 import { CreateCommentDto } from './dto/createComment.dto';
 import { UpdateCommentDto } from './dto/updateComment.dto';
+import { AccessService } from 'src/access/access.service';
+import { AccessHelper } from 'src/helpers/access.helper';
 
 @Controller('comment')
 export class CommentController {
-    @Inject(CommentService)
-    private readonly service: CommentService;
+    constructor(
+        @Inject(CommentService)
+        private readonly service: CommentService,
+        private readonly accessService: AccessService,
+    ) { }
 
     @UseGuards(AuthGuard('jwt'))
     @Get('/')
@@ -28,15 +35,21 @@ export class CommentController {
 
     @UseGuards(AuthGuard('jwt'))
     @Post('')
-    createPoint(
+    async create(
+        @Headers('authorization') authorization: string,
+        @Ip() ip,
         @Body() comment: CreateCommentDto,
     ) {
-        return this.service.create(comment);
+        const response = this.service.create(comment, authorization);
+
+        await this.accessService.create(AccessHelper.ACTION.ADDED, 'comment', authorization, ip);
+
+        return response;
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Patch('')
-    updatePoint(
+    update(
         @Body() comment: UpdateCommentDto,
     ) {
         return this.service.update(comment);
