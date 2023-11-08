@@ -40,19 +40,25 @@ export class CommentController {
         @Ip() ip,
         @Body() comment: CreateCommentDto,
     ) {
-        const response = this.service.create(comment, authorization);
+        const response = await this.service.create(comment, authorization);
 
         await this.accessService.create(AccessHelper.ACTION.ADDED, 'comment', authorization, ip);
-
+        
         return response;
     }
-
+    
     @UseGuards(AuthGuard('jwt'))
     @Patch('')
-    update(
+    async update(
+        @Headers('authorization') authorization: string,
+        @Ip() ip,
         @Body() comment: UpdateCommentDto,
-    ) {
-        return this.service.update(comment);
+        ) {
+            const response = await this.service.update(comment, authorization);
+            
+            await this.accessService.create(AccessHelper.ACTION.ADDED, 'comment', authorization, ip);
+            
+            return response;
     }
 
     @UseGuards(AuthGuard('jwt'))

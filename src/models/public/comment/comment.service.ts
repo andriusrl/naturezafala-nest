@@ -33,9 +33,18 @@ export class CommentService {
         return this.repository.save(newComment)
     }
 
-    async update(updateCommentDto: UpdateCommentDto) {
+    async update(updateCommentDto: UpdateCommentDto, authorization: string) {
 
-        const comment = await this.repository.findOne({ where: { id: updateCommentDto.id } });
+
+        const objToken = this.TokenService.findOne(authorization);
+
+        const comment = this.repository.findOne({ where: { id: updateCommentDto.id } });
+
+        const objPromise = await Promise.all([objToken, comment]);
+
+        if (objPromise[0].user !== objPromise[1].user) {
+            throw new NotFoundException(`Not authorized`);
+        }
 
         if (!comment) {
             throw new NotFoundException(`Comment ID ${updateCommentDto.id} not found`);
