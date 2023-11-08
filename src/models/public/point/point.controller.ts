@@ -27,7 +27,6 @@ export class PointController {
         private readonly accessService: AccessService,
     ) { }
 
-    @UseGuards(AuthGuard('jwt'))
     @Get('/')
     async index(): Promise<Point[]> {
         return this.service.findAll();
@@ -55,8 +54,10 @@ export class PointController {
         @Ip() ip,
         @Body() point: UpdatePointDto,
     ) {
-        const response = await this.service.update(point);
+        const response = await this.service.update(point, authorization);
+
         await this.accessService.create(AccessHelper.ACTION.UPDATE, 'point', authorization, ip);
+
         return response
     }
 
