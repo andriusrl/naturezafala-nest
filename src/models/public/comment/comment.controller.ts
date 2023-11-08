@@ -33,6 +33,11 @@ export class CommentController {
         return this.service.findAll();
     }
 
+    @Get('/point/:id')
+    async findCursosByNome(@Param('id') id: string): Promise<Comment[]> {
+        return this.service.findAllByPoint(+id);
+    }
+
     @UseGuards(AuthGuard('jwt'))
     @Post('')
     async create(

@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TokenService } from 'src/token/token.service';
-import { Repository } from 'typeorm';
+import { Equal, Repository } from 'typeorm';
 import { CreateCommentDto } from './dto/createComment.dto';
 import { UpdateCommentDto } from './dto/updateComment.dto';
 import { Comment } from './entities/comment.entity';
@@ -17,6 +17,18 @@ export class CommentService {
 
     async findAll(): Promise<Comment[]> {
         return this.repository.find();
+    }
+
+    async findAllByPoint(id: number): Promise<Comment[]> {
+        // async findAllByPoint(id: number) {
+        // return this.repository.find({ relations: { point: true, } });
+        return this.repository.find({
+            // relations: ['point'],
+            relations: { point: true, },
+            where: {
+                point: Equal(id)
+            }
+        });
     }
 
     async create(comment: CreateCommentDto, authorization: string): Promise<Comment> {

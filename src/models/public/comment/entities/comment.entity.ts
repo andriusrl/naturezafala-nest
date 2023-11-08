@@ -1,8 +1,11 @@
 import {
     Column,
     Entity,
+    JoinColumn,
+    ManyToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Point } from '../../point/entities/point.entity';
 
 @Entity('comment', { schema: 'public' })
 export class Comment {
@@ -13,7 +16,9 @@ export class Comment {
     comment: string;
 
     @Column({ type: 'int4' })
-    point: number;
+    @ManyToOne(type => Point, point => point.comment)
+    @JoinColumn({ name: 'point' })
+    point: Point;
 
     @Column({ type: 'timestamp' })
     date: Date;

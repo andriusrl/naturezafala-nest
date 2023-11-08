@@ -1,8 +1,11 @@
 import {
     Column,
     Entity,
+    OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Image } from '../../image/entities/image.entity';
+import { Comment } from '../../comment/entities/comment.entity';
 
 
 @Entity('point', { schema: 'public' })
@@ -27,4 +30,8 @@ export class Point {
 
     @Column({ type: 'int4' })
     longitude: number;
+
+    @OneToMany(type => Image, image => image.point) image: Image[]; 
+    
+    @OneToMany(type => Image, image => image.point) comment: Comment[];  
 }

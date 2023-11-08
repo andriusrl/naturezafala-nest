@@ -20,6 +20,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       migrations: ['dist/migrations/*{.ts,.js}'],
       migrationsRun: true,
       autoLoadEntities: true, // EntityMetadataNotFoundError
+      // relationLoadStrategy: "join"
     };
   }
 }

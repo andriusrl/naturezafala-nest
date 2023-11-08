@@ -1,4 +1,5 @@
 import { IsNumber, IsString, MaxLength } from 'class-validator';
+import { Point } from '../../point/entities/point.entity';
 
 export class CreateImageDto {
     @IsString()
@@ -6,5 +7,5 @@ export class CreateImageDto {
     url: string;
 
     @IsNumber()
-    point: number;
+    point: Point;
 }

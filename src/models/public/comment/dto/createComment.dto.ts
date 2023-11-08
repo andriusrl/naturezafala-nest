@@ -1,8 +1,8 @@
 import { IsDateString, IsNumber, IsString, MaxLength } from 'class-validator';
+import { Point } from '../../point/entities/point.entity';
 
 export class CreateCommentDto {
     @IsString()
-    // @MaxLength(255)
     comment: string;
 
     @IsDateString()
@@ -12,5 +12,5 @@ export class CreateCommentDto {
     user: number;
     
     @IsNumber()
-    point: number;
+    point: Point;
 }

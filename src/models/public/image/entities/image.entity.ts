@@ -1,8 +1,10 @@
 import {
     Column,
     Entity,
+    ManyToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Point } from '../../point/entities/point.entity';
 
 @Entity('image', { schema: 'public' })
 export class Image {
@@ -13,5 +15,6 @@ export class Image {
     url: string;
 
     @Column({ type: 'int4' })
-    point: number;
+    @ManyToOne(type => Point, point => point.image) 
+    point: Point;
 }
