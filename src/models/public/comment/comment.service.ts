@@ -20,10 +20,14 @@ export class CommentService {
     }
 
     async findAllByPoint(id: number): Promise<Comment[]> {
-        // async findAllByPoint(id: number) {
-        // return this.repository.find({ relations: { point: true, } });
         return this.repository.find({
-            // relations: ['point'],
+            select: {
+                id: true,
+                comment: true,
+                date: true,
+                user: true,
+                point: {name: true}
+            },
             relations: { point: true, },
             where: {
                 point: Equal(id)
