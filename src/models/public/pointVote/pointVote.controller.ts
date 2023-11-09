@@ -26,4 +26,9 @@ export class PointVoteController {
     async index(): Promise<PointVote[]> {
         return this.service.findAll();
     }
+
+    @Get('/point/:id')
+    async findCommentsByPoint(@Param('id') id: string): Promise<PointVote[]> {
+        return this.service.findAllByPoint(+id);
+    }
 }

@@ -23,4 +23,15 @@ export class PointVoteService {
     async findAll(): Promise<PointVote[]> {
         return this.repository.find();
     }
+
+    async findAllByPoint(id: number): Promise<PointVote[]> {
+        return this.repository.find({
+            select: {
+                vote: true,
+            },
+            where: {
+                point: Equal(id)
+            }
+        });
+    }
 }
