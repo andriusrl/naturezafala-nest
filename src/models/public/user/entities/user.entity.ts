@@ -3,8 +3,10 @@ import { TokenEntity } from 'src/token/token.entity';
 import {
     Column,
     Entity,
+    OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm';
+import { PointVote } from '../../pointVote/entities/pointVote.entity';
 
 @Entity('user', { schema: 'public' })
 export class User {
@@ -31,4 +33,7 @@ export class User {
 
     @Column({ type: 'varchar', length: 30 })
     public password?: string;
+
+    @OneToMany(type => PointVote, pointVote => pointVote.user) pointVote: PointVote[]; 
+
 }
