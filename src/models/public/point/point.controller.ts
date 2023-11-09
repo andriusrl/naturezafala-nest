@@ -28,8 +28,21 @@ export class PointController {
     ) { }
 
     @Get('/')
-    async index(): Promise<Point[]> {
+    async findAll(): Promise<Point[]> {
         return this.service.findAll();
+    }
+
+    @Get('/:id')
+    async findOne(
+        @Headers('authorization') authorization: string,
+        @Ip() ip,
+        @Param('id') id,
+    ) {
+        const response = await this.service.findOne(+id);
+
+        await this.accessService.create(AccessHelper.ACTION.VIEWED, 'point', authorization, ip);
+
+        return response
     }
 
     @UseGuards(AuthGuard('jwt'))

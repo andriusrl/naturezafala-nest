@@ -10,5 +10,6 @@ import { TokenModule } from 'src/token/token.module';
     imports: [TypeOrmModule.forFeature([Point]), AccessModule, TokenModule],
     controllers: [PointController],
     providers: [PointService],
+    exports: [PointService],
 })
 export class PointModule { }

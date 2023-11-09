@@ -19,6 +19,10 @@ export class PointService {
         return this.repository.find();
     }
 
+    async findOne(id): Promise<Point> {
+        return this.repository.findOne({ where: { id } });
+    }
+
     async createPoint(point: CreatePointDto): Promise<Point> {
 
         const newPoint = new Point();
