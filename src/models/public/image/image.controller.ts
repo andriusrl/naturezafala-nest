@@ -29,6 +29,11 @@ export class ImageController {
         return this.service.findAll();
     }
 
+    @Get('/point/:id')
+    async findCommentsByPoint(@Param('id') id: string): Promise<Image[]> {
+        return this.service.findAllByPoint(+id);
+    }
+
     @UseGuards(AuthGuard('jwt'))
     @Post('/:idPoint')
     @UseInterceptors(FileInterceptor('file'))

@@ -34,7 +34,7 @@ export class CommentController {
     }
 
     @Get('/point/:id')
-    async findCursosByNome(@Param('id') id: string): Promise<Comment[]> {
+    async findCommentsByPoint(@Param('id') id: string): Promise<Comment[]> {
         return this.service.findAllByPoint(+id);
     }
 

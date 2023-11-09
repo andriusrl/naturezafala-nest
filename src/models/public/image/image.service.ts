@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Equal, Repository } from 'typeorm';
 import { Image } from './entities/image.entity';
 import { CreateImageDto } from './dto/createImage.dto';
 import { UploadService } from 'src/common/s3/upload.service';
@@ -23,6 +23,15 @@ export class ImageService {
 
     async findAll(): Promise<Image[]> {
         return this.repository.find();
+    }
+
+    async findAllByPoint(id: number): Promise<Image[]> {
+        return this.repository.find({
+            relations: { point: true, },
+            where: {
+                point: Equal(id)
+            }
+        });
     }
 
     // async create(image: Express.Multer.File, idPoint: number, authorization: string): Promise<Image> {
