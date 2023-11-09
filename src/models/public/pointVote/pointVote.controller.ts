@@ -11,15 +11,22 @@ import {
     UploadedFile,
     UseGuards,
     UseInterceptors,
+    Ip,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { PointVote } from './entities/pointVote.entity';
 import { PointVoteService } from './pointVote.service';
+import { CreatePointVoteDto } from './dto/createPointVote.dto';
+import { AccessService } from 'src/access/access.service';
+import { AccessHelper } from 'src/helpers/access.helper';
 
 @Controller('pointvote')
 export class PointVoteController {
-    @Inject(PointVoteService)
-    private readonly service: PointVoteService;
+    constructor(
+        @Inject(PointVoteService)
+        private readonly service: PointVoteService,
+        private readonly accessService: AccessService,
+    ) { }
 
     @UseGuards(AuthGuard('jwt'))
     @Get('/')
@@ -30,5 +37,20 @@ export class PointVoteController {
     @Get('/point/:id')
     async findCommentsByPoint(@Param('id') id: string): Promise<PointVote[]> {
         return this.service.findAllByPoint(+id);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Post('/:idPoint')
+    async create(
+        @Param('idPoint') idPoint: string,
+        @Headers('authorization') authorization: string,
+        @Ip() ip,
+        @Body() voteBody: CreatePointVoteDto,
+    ) {
+        const response = await this.service.create(idPoint, voteBody, authorization);
+
+        await this.accessService.create(AccessHelper.ACTION.ADDED, `point ${idPoint} Vote ${voteBody ? 'true' : 'false'}`, authorization, ip);
+
+        return response;
     }
 }
