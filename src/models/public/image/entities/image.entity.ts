@@ -1,6 +1,7 @@
 import {
     Column,
     Entity,
+    JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -16,5 +17,6 @@ export class Image {
 
     @Column({ type: 'int4' })
     @ManyToOne(type => Point, point => point.image) 
+    @JoinColumn({ name: 'point' })
     point: Point;
 }

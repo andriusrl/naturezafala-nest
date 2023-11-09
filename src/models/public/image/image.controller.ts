@@ -1,5 +1,6 @@
 import {
     Body,
+    Headers,
     Controller,
     Delete,
     Get,
@@ -7,12 +8,15 @@ import {
     Param,
     Patch,
     Post,
+    UploadedFile,
     UseGuards,
+    UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ImageService } from './image.service';
 import { Image } from './entities/image.entity';
 import { CreateImageDto } from './dto/createImage.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('image')
 export class ImageController {
@@ -26,11 +30,16 @@ export class ImageController {
     }
 
     @UseGuards(AuthGuard('jwt'))
-    @Post('')
+    @Post('/:idPoint')
+    @UseInterceptors(FileInterceptor('file'))
     create(
-        @Body() image: CreateImageDto,
+        @Headers('authorization') authorization: string,
+        @Param('idPoint') idPoint,
+        @UploadedFile() file: Express.Multer.File
     ) {
-        return this.service.create(image);
+        console.log('file')
+        console.log(file)
+        return this.service.create(file, idPoint, authorization);
     }
 
     @UseGuards(AuthGuard('jwt'))
