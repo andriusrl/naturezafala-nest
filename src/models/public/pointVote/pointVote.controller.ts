@@ -53,4 +53,18 @@ export class PointVoteController {
 
         return response;
     }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Delete('/:idPoint')
+    async delete(
+        @Headers('authorization') authorization: string,
+        @Ip() ip,
+        @Param('idPoint') idPoint,
+    ) {
+        const response = await this.service.delete(+idPoint, authorization);
+
+        await this.accessService.create(AccessHelper.ACTION.DELETE, `vote point`, authorization, ip);
+
+        return response
+    }
 }

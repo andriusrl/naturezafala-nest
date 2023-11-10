@@ -60,12 +60,11 @@ export class PointVoteService {
 
         const objPointVote = await this.findByPoint({ id: idPoint, user: objToken.user })
 
-        const newPointVote = new PointVote();
-        newPointVote.point = idPoint;
-        newPointVote.user = objToken.user;
-        newPointVote.vote = voteBody.vote;
-
         if (!objPointVote[0]) {
+            const newPointVote = new PointVote();
+            newPointVote.point = idPoint;
+            newPointVote.user = objToken.user;
+            newPointVote.vote = voteBody.vote;
             return this.repository.save(newPointVote)
         }
 
@@ -74,5 +73,17 @@ export class PointVoteService {
         partialPointVote.vote = voteBody.vote;
 
         return this.repository.save(partialPointVote)
+    }
+
+    async delete(idPoint: number, authorization: string): Promise<PointVote> {
+
+        const objToken = await this.TokenService.findOne(authorization);
+
+        const objPointVote = await this.findByPoint({ id: idPoint, user: objToken.user })
+
+        if (objToken.user !== objPointVote[0].user) {
+            throw new NotFoundException(`Not authorized`);
+        }
+        return this.repository.remove(objPointVote[0]);
     }
 }
