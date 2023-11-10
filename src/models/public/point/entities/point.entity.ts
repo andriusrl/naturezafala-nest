@@ -1,11 +1,14 @@
 import {
     Column,
     Entity,
+    JoinColumn,
+    ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Image } from '../../image/entities/image.entity';
 import { Comment } from '../../comment/entities/comment.entity';
+import { PollutionType } from '../../pollutionType/entities/pollutionType.entity';
 
 
 @Entity('point', { schema: 'public' })
@@ -30,6 +33,11 @@ export class Point {
 
     @Column({ type: 'int4' })
     longitude: number;
+
+    @Column({ type: 'int4' })
+    @ManyToOne(type => PollutionType, pollutionType => pollutionType.point)
+    @JoinColumn({ name: 'pollution_type' })
+    pollution_type: number;
 
     @OneToMany(type => Image, image => image.point) image: Image[]; 
     

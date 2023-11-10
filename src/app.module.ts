@@ -13,6 +13,7 @@ import { CommentModule } from './models/public/comment/comment.module';
 import { ImageModule } from './models/public/image/image.module';
 import { AccessModule } from './access/access.module';
 import { PointVoteModule } from './models/public/pointVote/pointVote.module';
+import { PollutionTypeModule } from './models/public/pollutionType/pollutionType.module';
 
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
@@ -27,7 +28,8 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     PointModule,
     CommentModule,
     ImageModule,
-    PointVoteModule
+    PointVoteModule,
+    PollutionTypeModule
   ],
   controllers: [AppController],
   providers: [AppService],
