@@ -55,17 +55,24 @@ export class PointVoteService {
         });
     }
 
-    async create(idPoint, voteBody, authorization: string) {
+    async create(idPoint, voteBody, authorization: string): Promise<PointVote> {
         const objToken = await this.TokenService.findOne(authorization);
 
         const objPointVote = await this.findByPoint({ id: idPoint, user: objToken.user })
 
-        const pointVotePreload = await this.repository.preload(objPointVote[0]);
+        const newPointVote = new PointVote();
+        newPointVote.point = idPoint;
+        newPointVote.user = objToken.user;
+        newPointVote.vote = voteBody.vote;
 
+        if (!objPointVote[0]) {
+            return this.repository.save(newPointVote)
+        }
 
-        pointVotePreload.vote = voteBody.vote;
+        const partialPointVote = await this.repository.preload({ ...objPointVote[0] });
 
+        partialPointVote.vote = voteBody.vote;
 
-        return this.repository.save(pointVotePreload)
+        return this.repository.save(partialPointVote)
     }
 }
