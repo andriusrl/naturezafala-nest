@@ -18,7 +18,7 @@ export class CreateTablePoint1698711672503 implements MigrationInterface {
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         queryRunner.query(`
-            drop table public.point
+            drop table public.point;
         `)
     }
 
