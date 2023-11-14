@@ -45,9 +45,6 @@ export class PointService {
 
         const objPromise = await Promise.all([objToken, point]);
 
-        console.log('test123')
-        console.log(objPromise[0].user.type)
-
         if ((objPromise[0].user.id !== objPromise[1].user)) {
             if(objPromise[0].user.type !== 1){
                 throw new NotFoundException(`Not authorized`);
@@ -72,7 +69,9 @@ export class PointService {
         const objPromise = await Promise.all([objToken, point]);
 
         if (objPromise[0].user.id !== objPromise[1].user) {
-            throw new NotFoundException(`Not authorized`);
+            if(objPromise[0].user.type !== 1){
+                throw new NotFoundException(`Not authorized`);
+            }
         }
 
         if (!point) {
