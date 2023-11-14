@@ -38,9 +38,6 @@ export class CommentService {
     async create(comment: CreateCommentDto, authorization: string): Promise<Comment> {
         const objToken = await this.TokenService.findOne(authorization);
 
-        console.log('objtoken q q q')
-        console.log(objToken.user.id)
-
         const newComment = new Comment();
 
         newComment.comment = comment.comment;

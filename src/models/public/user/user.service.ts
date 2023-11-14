@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
@@ -14,8 +14,16 @@ export class UserService {
         private readonly TokenService: TokenService,
     ) { }
 
-    async findAll(authorization): Promise<User[]> {
-        return this.repository.find();
+    async findAll(authorization: string): Promise<User[]> {
+            // const objToken = await this.TokenService.findOne(authorization);
+
+            // console.log('objToken de teste:', objToken);
+
+            // if (!objToken || objToken.user.type !== 1) {
+            //     throw new NotFoundException();
+            // }
+            
+            return this.repository.find();
     }
 
     async findOne(user: User): Promise<User> {
