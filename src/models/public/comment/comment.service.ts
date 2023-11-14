@@ -26,7 +26,7 @@ export class CommentService {
                 comment: true,
                 date: true,
                 user: true,
-                point: {name: true}
+                point: { name: true }
             },
             relations: { point: true, },
             where: {
@@ -49,7 +49,6 @@ export class CommentService {
     }
 
     async update(updateCommentDto: UpdateCommentDto, authorization: string) {
-
         const objToken = this.TokenService.findOne(authorization);
 
         const comment = this.repository.findOne({ where: { id: updateCommentDto.id } });
@@ -57,7 +56,9 @@ export class CommentService {
         const objPromise = await Promise.all([objToken, comment]);
 
         if (objPromise[0].user.id !== objPromise[1].user) {
-            throw new NotFoundException(`Not authorized`);
+            if (objPromise[0].user.type !== 1) {
+                throw new NotFoundException(`Not authorized`);
+            }
         }
 
         if (!comment) {
@@ -70,7 +71,6 @@ export class CommentService {
     }
 
     async delete(id: number, authorization: string) {
-
         const objToken = this.TokenService.findOne(authorization);
 
         const comment = await this.repository.findOne({ where: { id } });
