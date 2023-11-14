@@ -50,8 +50,9 @@ export class ImageController {
     @UseGuards(AuthGuard('jwt'))
     @Delete('/:id')
     delete(
+        @Headers('authorization') authorization: string,
         @Param('id') id,
     ) {
-        return this.service.delete(+id);
+        return this.service.delete(+id, authorization);
     }
 }

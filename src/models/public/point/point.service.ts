@@ -24,7 +24,6 @@ export class PointService {
     }
 
     async createPoint(point: CreatePointDto): Promise<Point> {
-
         const newPoint = new Point();
 
         newPoint.name = point.name;
@@ -38,7 +37,6 @@ export class PointService {
     }
 
     async update(updatePointDto: UpdatePointDto, authorization: string) {
-
         const objToken = this.TokenService.findOne(authorization);
 
         const point = this.repository.findOne({ where: { id: updatePointDto.id } });
@@ -61,7 +59,6 @@ export class PointService {
     }
 
     async delete(id: number, authorization: string) {
-
         const objToken = this.TokenService.findOne(authorization);
 
         const point = await this.repository.findOne({ where: { id } });

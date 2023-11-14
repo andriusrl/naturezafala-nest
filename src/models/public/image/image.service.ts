@@ -34,8 +34,7 @@ export class ImageService {
         });
     }
 
-    // async create(image: Express.Multer.File, idPoint: number, authorization: string): Promise<Image> {
-    async create(image: Express.Multer.File, idPoint: Point, authorization: string) {
+    async create(image: Express.Multer.File, idPoint: Point, authorization: string): Promise<Image> {
 
         const objToken = this.TokenService.findOne(authorization);
 
@@ -53,8 +52,6 @@ export class ImageService {
 
         const imageResponse = await this.uploadService.execute(image, "point/")
 
-        console.log(imageResponse)
-
         const newImage = new Image();
 
         newImage.url = imageResponse.Location;
@@ -63,7 +60,19 @@ export class ImageService {
         return this.repository.save(newImage)
     }
 
-    async delete(id: number) {
+    async delete(id: number, authorization: string): Promise<Image> {
+
+        const objToken = this.TokenService.findOne(authorization);
+
+        const point = this.pointService.findOne(id);
+
+        const objPromise = await Promise.all([objToken, point]);
+
+        if (objPromise[0]?.user.id !== objPromise[1]?.user) {
+            if (objPromise[0].user.type !== 1) {
+                throw new NotFoundException(`Not authorized`);
+            }
+        }
         const image = await this.repository.findOne({ where: { id } });
 
         if (!image) {
