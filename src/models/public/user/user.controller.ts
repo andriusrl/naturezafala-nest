@@ -38,8 +38,6 @@ export class UserController {
 
         const objToken = await this.TokenService.findOne(authorization);
 
-        console.log('objToken de teste:', objToken);
-
         if (!objToken || objToken.user.type !== 1) {
             throw new NotFoundException("Not authorized");
         }
