@@ -1,9 +1,9 @@
-import Access from 'src/access/entities/access.entity';
 import { TokenEntity } from 'src/token/token.entity';
 import {
     Column,
     Entity,
     OneToMany,
+    OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { PointVote } from '../../pointVote/entities/pointVote.entity';
@@ -35,5 +35,8 @@ export class User {
     public password?: string;
 
     @OneToMany(type => PointVote, pointVote => pointVote.user) pointVote: PointVote[]; 
+
+    @OneToOne(() => TokenEntity, (tokenEntity) => tokenEntity.user)
+    tokenEntity: TokenEntity;
 
 }

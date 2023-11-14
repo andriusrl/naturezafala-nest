@@ -36,14 +36,16 @@ export class CommentService {
     }
 
     async create(comment: CreateCommentDto, authorization: string): Promise<Comment> {
-
         const objToken = await this.TokenService.findOne(authorization);
+
+        console.log('objtoken q q q')
+        console.log(objToken.user.id)
 
         const newComment = new Comment();
 
         newComment.comment = comment.comment;
         newComment.date = comment.date;
-        newComment.user = objToken.user;
+        newComment.user = objToken.user.id;
         newComment.point = comment.point;
 
         return this.repository.save(newComment)
@@ -57,7 +59,7 @@ export class CommentService {
 
         const objPromise = await Promise.all([objToken, comment]);
 
-        if (objPromise[0].user !== objPromise[1].user) {
+        if (objPromise[0].user.id !== objPromise[1].user) {
             throw new NotFoundException(`Not authorized`);
         }
 
@@ -78,7 +80,7 @@ export class CommentService {
 
         const objPromise = await Promise.all([objToken, comment]);
 
-        if (objPromise[0].user !== objPromise[1].user) {
+        if (objPromise[0].user.id !== objPromise[1].user) {
             throw new NotFoundException(`Not authorized`);
         }
 

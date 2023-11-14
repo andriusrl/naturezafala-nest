@@ -31,7 +31,7 @@ export class AccessService {
 
     const access = new AccessEntity();
 
-    access.user_id = objToken?.user
+    access.user_id = objToken?.user?.id
     access.action = action
     access.description = description
     access.ip = ipConverted

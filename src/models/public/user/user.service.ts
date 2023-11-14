@@ -1,14 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
+import { CreateUserDto } from './dto/createUser.dto';
+import { TokenService } from 'src/token/token.service';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(User)
         private readonly repository: Repository<User>,
+        @Inject(TokenService)
+        private readonly TokenService: TokenService,
     ) { }
+
+    async findAll(authorization): Promise<User[]> {
+        return this.repository.find();
+    }
 
     async findOne(user: User): Promise<User> {
 
@@ -39,5 +47,18 @@ export class UserService {
         });
 
         return response;
+    }
+
+    async create(userBody: CreateUserDto): Promise<User> {
+        const user = new User();
+
+        user.name = userBody.name
+        user.birth_date = userBody.birthDate
+        user.fone = userBody.fone
+        user.cpf = userBody.cpf
+        user.email = userBody.email
+        user.password = userBody.password
+
+        return this.repository.save(user)
     }
 }

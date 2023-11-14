@@ -5,18 +5,19 @@ import {
     Inject,
     Injectable,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Equal, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { AuthService } from '../auth/auth.service';
 import { TokenEntity } from './token.entity';
 import { UserService } from 'src/models/public/user/user.service';
-
+import { User } from 'src/models/public/user/entities/user.entity';
 @Injectable()
 export class TokenService {
     constructor(
         @InjectRepository(TokenEntity)
         private tokenRepository: Repository<TokenEntity>,
+        @Inject(forwardRef(() => UserService))
         private userService: UserService,
     ) { }
 
@@ -29,7 +30,7 @@ export class TokenService {
 
             objToken = await this.tokenRepository.findOne({
                 where: {
-                    user: usernameResponse.id,
+                    user: Equal(usernameResponse.id),
                 },
             });
 
@@ -41,11 +42,15 @@ export class TokenService {
                     },
                 );
             } else {
-                this.tokenRepository.insert({
-                    id,
-                    hash,
-                    user: usernameResponse.id,
-                });
+                const newToken = new TokenEntity();
+                const newUser = new User();
+                newUser.id = usernameResponse.id
+
+                newToken.id = id;
+                newToken.hash = hash;
+                newToken.user = newUser;
+
+                return this.tokenRepository.save(newToken)
             }
         } catch (err) {
             console.log(err);
@@ -53,26 +58,11 @@ export class TokenService {
     }
 
     async findOne(token) {
-        if (token.includes('Bearer')) {
-            return await this.tokenRepository.findOne({
-                where: {
-                    hash: token.replace('Bearer ', ''),
-                },
-            });
-        }
-
-        const queryBuilder = this.tokenRepository
-            .createQueryBuilder('tk')
-            .select([
-                'tk.id as id',
-                'tk.hash as hash',
-                'tk.user as user',
-                'user.name as user_name',
-                'user.email as user_email',
-            ])
-            .where('tk.hash = :token', { token })
-            .leftJoin('tk.user', 'user');
-
-        return await queryBuilder.getRawOne();
+        return await this.tokenRepository.findOne({
+            relations: { user: true },
+            where: {
+                hash: token.includes('Bearer') ? token.replace('Bearer ', '') : token,
+            },
+        });
     }
 }

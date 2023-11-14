@@ -16,7 +16,7 @@ export class TokenEntity {
     hash: string;
 
     @Column({ type: 'int4' })
-    @OneToOne(() => User, (user) => user.id)
-    @JoinColumn({ name: 'user'})
-    user: number;
+    @OneToOne(() => User, (user) => user.tokenEntity)
+    @JoinColumn({ name: 'user' })
+    user: User;
 }

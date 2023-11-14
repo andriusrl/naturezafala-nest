@@ -15,8 +15,8 @@ import { AccessModule } from 'src/access/access.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    UserModule,
     PassportModule,
+    forwardRef(() => UserModule),
     forwardRef(() => TokenModule),
     forwardRef(() => AccessModule),
     JwtModule.register({

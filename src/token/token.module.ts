@@ -9,9 +9,9 @@ import { UserModule } from 'src/models/public/user/user.module';
   imports: [
     TypeOrmModule.forFeature([TokenEntity]),
     forwardRef(() => AuthModule),
-    UserModule,
+    forwardRef(() => UserModule)
   ],
   providers: [TokenService],
   exports: [TokenService],
 })
-export class TokenModule {}
+export class TokenModule { }

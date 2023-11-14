@@ -52,7 +52,7 @@ export class PointVoteService {
     async create(idPoint, voteBody, authorization: string): Promise<PointVote> {
         const objToken = await this.TokenService.findOne(authorization);
 
-        const objPointVote = await this.findByPoint({ id: idPoint, user: objToken.user })
+        const objPointVote = await this.findByPoint({ id: idPoint, user: objToken.user.id })
 
         if (!objPointVote[0]) {
             const newPointVote = new PointVote();
@@ -73,7 +73,7 @@ export class PointVoteService {
 
         const objToken = await this.TokenService.findOne(authorization);
 
-        const objPointVote = await this.findByPoint({ id: idPoint, user: objToken.user })
+        const objPointVote = await this.findByPoint({ id: idPoint, user: objToken.user.id })
 
         if (objToken.user !== objPointVote[0].user) {
             throw new NotFoundException(`Not authorized`);
