@@ -1,4 +1,4 @@
-import { IsDateString,IsString, MaxLength } from 'class-validator';
+import { IsBoolean, IsDateString,IsString, MaxLength } from 'class-validator';
 
 export class CreateUserDto {
     @IsString()
@@ -11,6 +11,9 @@ export class CreateUserDto {
     @IsString()
     @MaxLength(25)
     fone: string;
+
+    @IsBoolean()
+    status: boolean;
 
     @IsString()
     @MaxLength(11)

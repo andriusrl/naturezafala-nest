@@ -34,7 +34,10 @@ export class User {
     @Column({ type: 'varchar', length: 30 })
     public password?: string;
 
-    @OneToMany(type => PointVote, pointVote => pointVote.user) pointVote: PointVote[]; 
+    @Column({ type: 'boolean' })
+    public status?: boolean;
+
+    @OneToMany(type => PointVote, pointVote => pointVote.user) pointVote: PointVote[];
 
     @OneToOne(() => TokenEntity, (tokenEntity) => tokenEntity.user)
     tokenEntity: TokenEntity;
