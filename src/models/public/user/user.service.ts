@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/createUser.dto';
 import { TokenService } from 'src/token/token.service';
+import { UpdateUserDto } from './dto/updateUser.dto';
 
 @Injectable()
 export class UserService {
@@ -15,15 +16,15 @@ export class UserService {
     ) { }
 
     async findAll(authorization: string): Promise<User[]> {
-            // const objToken = await this.TokenService.findOne(authorization);
+        // const objToken = await this.TokenService.findOne(authorization);
 
-            // console.log('objToken de teste:', objToken);
+        // console.log('objToken de teste:', objToken);
 
-            // if (!objToken || objToken.user.type !== 1) {
-            //     throw new NotFoundException();
-            // }
-            
-            return this.repository.find();
+        // if (!objToken || objToken.user.type !== 1) {
+        //     throw new NotFoundException();
+        // }
+
+        return this.repository.find();
     }
 
     async findOne(user: User): Promise<User> {
@@ -68,5 +69,30 @@ export class UserService {
         user.password = userBody.password
 
         return this.repository.save(user)
+    }
+
+    async update(updateUserDto: UpdateUserDto, authorization: string) {
+        const objToken = this.TokenService.findOne(authorization);
+
+        const user = this.repository.findOne({ where: { id: updateUserDto.id } });
+
+
+        const objPromise = await Promise.all([objToken, user]);
+
+        console.log('objPromise:', objPromise);
+
+        if ((objPromise[0].user.id !== objPromise[1].id)) {
+            if (objPromise[0].user.type !== 1) {
+                throw new NotFoundException(`Not authorized`);
+            }
+        }
+
+        if (!user) {
+            throw new NotFoundException(`User ID ${objPromise[1].id} not found`);
+        }
+
+        await this.repository.update({ id: updateUserDto.id }, updateUserDto)
+
+        return updateUserDto;
     }
 }
