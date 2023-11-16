@@ -18,6 +18,7 @@ import { AccessService } from 'src/access/access.service';
 import { AccessHelper } from 'src/helpers/access.helper';
 import { TokenService } from 'src/token/token.service';
 import { UpdateUserDto } from './dto/updateUser.dto';
+import { CreateUserDto } from './dto/createUser.dto';
 
 @Controller('user')
 export class UserController {
@@ -50,19 +51,21 @@ export class UserController {
         return response;
     }
 
-    // @UseGuards(AuthGuard('jwt'))
-    // @Post('')
-    // async create(
-    //     @Headers('authorization') authorization: string,
-    //     @Ip() ip,
-    //     @Body() comment: CreateCommentDto,
-    // ) {
-    //     const response = await this.service.create(comment, authorization);
+    @Post('')
+    async create(
+        @Headers('authorization') authorization: string,
+        @Ip() ip,
+        @Body() user: CreateUserDto,
+        
+    ) {
+        console.log('user controller')
+        console.log(user)
+        const response = await this.service.create(user);
 
-    //     await this.accessService.create(AccessHelper.ACTION.ADDED, 'comment', authorization, ip);
+        // await this.accessService.create(AccessHelper.ACTION.ADDED, 'user', authorization, ip);
 
-    //     return response;
-    // }
+        return response;
+    }
 
     @UseGuards(AuthGuard('jwt'))
     @Patch('')

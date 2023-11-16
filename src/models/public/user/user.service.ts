@@ -67,6 +67,8 @@ export class UserService {
         user.cpf = userBody.cpf
         user.email = userBody.email
         user.password = userBody.password
+        user.status = true
+        user.type = 3
 
         return this.repository.save(user)
     }
@@ -76,10 +78,7 @@ export class UserService {
 
         const user = this.repository.findOne({ where: { id: updateUserDto.id } });
 
-
         const objPromise = await Promise.all([objToken, user]);
-
-        console.log('objPromise:', objPromise);
 
         if ((objPromise[0].user.id !== objPromise[1].id)) {
             if (objPromise[0].user.type !== 1) {
