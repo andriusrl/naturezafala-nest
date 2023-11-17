@@ -40,9 +40,6 @@ export class AuthService {
 
     const objToken = await this.tokenService.findOne(token);
 
-    console.log('oque quero q retorne')
-    console.log(objToken)
-
     return {
       username: objToken.user.email,
       token,
