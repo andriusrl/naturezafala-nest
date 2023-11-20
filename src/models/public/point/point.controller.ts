@@ -53,7 +53,7 @@ export class PointController {
         @Body() point: CreatePointDto,
     ) {
 
-        const response = this.service.createPoint(point);
+        const response = this.service.createPoint(point, authorization);
 
         await this.accessService.create(AccessHelper.ACTION.ADDED, 'point', authorization, ip);
 

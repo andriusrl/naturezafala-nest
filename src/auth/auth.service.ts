@@ -18,7 +18,7 @@ export class AuthService {
     private readonly tokenService: TokenService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) { }
+  ) {}
 
   async login(user, refresh?) {
     const payload = {
@@ -55,8 +55,7 @@ export class AuthService {
       },
     });
 
-    if (!resDados)
-      throw new UnauthorizedException('Email ou senha invalidos');
+    if (!resDados) throw new UnauthorizedException('Email ou senha invalidos');
     return resDados;
   }
 }

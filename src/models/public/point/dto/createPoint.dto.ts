@@ -8,11 +8,8 @@ export class CreatePointDto {
     @IsString()
     description: string;
 
-    @IsDateString()
-    date: Date;
-
     @IsNumber()
-    user: number;
+    pollution_type: number;
 
     @IsNumber()
     latitude: number;
