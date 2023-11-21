@@ -1,16 +1,16 @@
 import {
-    Headers,
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Inject,
-    Param,
-    Patch,
-    Post,
-    UseGuards,
-    Ip,
-    NotFoundException
+  Headers,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+  Ip,
+  NotFoundException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
@@ -22,76 +22,87 @@ import { CreateUserDto } from './dto/createUser.dto';
 
 @Controller('user')
 export class UserController {
-    constructor(
-        @Inject(UserService)
-        private readonly service: UserService,
-        @Inject(AccessService)
-        private readonly accessService: AccessService,
-        @Inject(TokenService)
-        private readonly TokenService: TokenService,
-    ) { }
+  constructor(
+    @Inject(UserService)
+    private readonly service: UserService,
+    @Inject(AccessService)
+    private readonly accessService: AccessService,
+    @Inject(TokenService)
+    private readonly TokenService: TokenService,
+  ) {}
 
-    @UseGuards(AuthGuard('jwt'))
-    @Get('/')
-    async index(
-        @Headers('authorization') authorization: string,
-        @Ip() ip,
-    ) {
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/logged')
+  async checkLogged() {
+    return true;
+  }
 
-        const objToken = await this.TokenService.findOne(authorization);
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/')
+  async index(@Headers('authorization') authorization: string, @Ip() ip) {
+    const objToken = await this.TokenService.findOne(authorization);
 
-        if (!objToken || objToken.user.type !== 1) {
-            throw new NotFoundException("Not authorized");
-        }
-
-        const response = this.service.findAll(authorization);
-
-        await this.accessService.create(AccessHelper.ACTION.ADDED, 'comment', authorization, ip);
-
-        return response;
+    if (!objToken || objToken.user.type !== 1) {
+      throw new NotFoundException('Not authorized');
     }
 
-    @Post('')
-    async create(
-        @Headers('authorization') authorization: string,
-        @Ip() ip,
-        @Body() user: CreateUserDto,
-        
-    ) {
-        console.log('user controller')
-        console.log(user)
-        const response = await this.service.create(user);
+    const response = this.service.findAll(authorization);
 
-        // await this.accessService.create(AccessHelper.ACTION.ADDED, 'user', authorization, ip);
+    await this.accessService.create(
+      AccessHelper.ACTION.ADDED,
+      'comment',
+      authorization,
+      ip,
+    );
 
-        return response;
-    }
+    return response;
+  }
 
-    @UseGuards(AuthGuard('jwt'))
-    @Patch('')
-    async update(
-        @Headers('authorization') authorization: string,
-        @Ip() ip,
-        @Body() user: UpdateUserDto,
-    ) {
-        const response = await this.service.update(user, authorization);
+  @Post('')
+  async create(
+    @Headers('authorization') authorization: string,
+    @Ip() ip,
+    @Body() user: CreateUserDto,
+  ) {
+    console.log('user controller');
+    console.log(user);
+    const response = await this.service.create(user);
 
-        await this.accessService.create(AccessHelper.ACTION.UPDATE, 'comment', authorization, ip);
+    // await this.accessService.create(AccessHelper.ACTION.ADDED, 'user', authorization, ip);
 
-        return response;
-    }
+    return response;
+  }
 
-    // @UseGuards(AuthGuard('jwt'))
-    // @Delete('/:id')
-    // async deleteFile(
-    //     @Headers('authorization') authorization: string,
-    //     @Ip() ip,
-    //     @Param('id') id,
-    // ) {
-    //     const response = await this.service.delete(+id, authorization);
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('')
+  async update(
+    @Headers('authorization') authorization: string,
+    @Ip() ip,
+    @Body() user: UpdateUserDto,
+  ) {
+    const response = await this.service.update(user, authorization);
 
-    //     await this.accessService.create(AccessHelper.ACTION.UPDATE, 'comment', authorization, ip);
+    await this.accessService.create(
+      AccessHelper.ACTION.UPDATE,
+      'comment',
+      authorization,
+      ip,
+    );
 
-    //     return response;
-    // }
+    return response;
+  }
+
+  // @UseGuards(AuthGuard('jwt'))
+  // @Delete('/:id')
+  // async deleteFile(
+  //     @Headers('authorization') authorization: string,
+  //     @Ip() ip,
+  //     @Param('id') id,
+  // ) {
+  //     const response = await this.service.delete(+id, authorization);
+
+  //     await this.accessService.create(AccessHelper.ACTION.UPDATE, 'comment', authorization, ip);
+
+  //     return response;
+  // }
 }
