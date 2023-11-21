@@ -20,7 +20,19 @@ export class PointService {
   }
 
   async findOne(id): Promise<Point> {
-    return this.repository.findOne({ where: { id } });
+    return this.repository.findOne({
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        date: true,
+        latitude: true,
+        longitude: true,
+        pollutionType: { id: true, name: true },
+      },
+      relations: { pollutionType: true },
+      where: { id },
+    });
   }
 
   async createPoint(
@@ -36,7 +48,7 @@ export class PointService {
     newPoint.date = new Date();
     newPoint.latitude = point.latitude;
     newPoint.longitude = point.longitude;
-    newPoint.pollution_type = point.pollution_type;
+    newPoint.pollutionType = point.pollutionType;
     newPoint.user = objToken.user.id;
 
     return this.repository.save(newPoint);

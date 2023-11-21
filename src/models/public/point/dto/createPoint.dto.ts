@@ -1,4 +1,5 @@
 import { IsDateString, IsNumber, IsString, MaxLength } from 'class-validator';
+import { PollutionType } from '../../pollutionType/entities/pollutionType.entity';
 
 export class CreatePointDto {
   @IsString()
@@ -9,7 +10,7 @@ export class CreatePointDto {
   description: string;
 
   @IsNumber()
-  pollution_type: number;
+  pollutionType: PollutionType;
 
   @IsNumber()
   latitude: number;

@@ -8,83 +8,90 @@ import { Comment } from './entities/comment.entity';
 
 @Injectable()
 export class CommentService {
-    constructor(
-        @InjectRepository(Comment)
-        private readonly repository: Repository<Comment>,
-        @Inject(TokenService)
-        private readonly TokenService: TokenService,
-    ) { }
+  constructor(
+    @InjectRepository(Comment)
+    private readonly repository: Repository<Comment>,
+    @Inject(TokenService)
+    private readonly TokenService: TokenService,
+  ) {}
 
-    async findAll(): Promise<Comment[]> {
-        return this.repository.find();
+  async findAll(): Promise<Comment[]> {
+    return this.repository.find();
+  }
+
+  async findAllByPoint(id: number): Promise<Comment[]> {
+    return this.repository.find({
+      select: {
+        id: true,
+        comment: true,
+        date: true,
+        user: true,
+        point: { name: true },
+      },
+      relations: { point: true },
+      where: {
+        point: Equal(id),
+      },
+    });
+  }
+
+  async create(
+    comment: CreateCommentDto,
+    authorization: string,
+  ): Promise<Comment> {
+    const objToken = await this.TokenService.findOne(authorization);
+
+    const newComment = new Comment();
+
+    newComment.comment = comment.comment;
+    newComment.date = comment.date;
+    newComment.user = objToken.user.id;
+    newComment.point = comment.point;
+
+    return this.repository.save(newComment);
+  }
+
+  async update(updateCommentDto: UpdateCommentDto, authorization: string) {
+    const objToken = this.TokenService.findOne(authorization);
+
+    const comment = this.repository.findOne({
+      where: { id: updateCommentDto.id },
+    });
+
+    const objPromise = await Promise.all([objToken, comment]);
+
+    if (objPromise[0].user.id !== objPromise[1].user) {
+      if (objPromise[0].user.type !== 1) {
+        throw new NotFoundException(`Not authorized`);
+      }
     }
 
-    async findAllByPoint(id: number): Promise<Comment[]> {
-        return this.repository.find({
-            select: {
-                id: true,
-                comment: true,
-                date: true,
-                user: true,
-                point: { name: true }
-            },
-            relations: { point: true, },
-            where: {
-                point: Equal(id)
-            }
-        });
+    if (!comment) {
+      throw new NotFoundException(
+        `Comment ID ${updateCommentDto.id} not found`,
+      );
     }
 
-    async create(comment: CreateCommentDto, authorization: string): Promise<Comment> {
-        const objToken = await this.TokenService.findOne(authorization);
+    await this.repository.update({ id: updateCommentDto.id }, updateCommentDto);
 
-        const newComment = new Comment();
+    return updateCommentDto;
+  }
 
-        newComment.comment = comment.comment;
-        newComment.date = comment.date;
-        newComment.user = objToken.user.id;
-        newComment.point = comment.point;
+  async delete(id: number, authorization: string) {
+    const objToken = this.TokenService.findOne(authorization);
 
-        return this.repository.save(newComment)
+    const comment = await this.repository.findOne({ where: { id } });
+
+    const objPromise = await Promise.all([objToken, comment]);
+
+    if (objPromise[0].user.id !== objPromise[1].user) {
+      throw new NotFoundException(`Not authorized`);
     }
 
-    async update(updateCommentDto: UpdateCommentDto, authorization: string) {
-        const objToken = this.TokenService.findOne(authorization);
-
-        const comment = this.repository.findOne({ where: { id: updateCommentDto.id } });
-
-        const objPromise = await Promise.all([objToken, comment]);
-
-        if (objPromise[0].user.id !== objPromise[1].user) {
-            if (objPromise[0].user.type !== 1) {
-                throw new NotFoundException(`Not authorized`);
-            }
-        }
-
-        if (!comment) {
-            throw new NotFoundException(`Comment ID ${updateCommentDto.id} not found`);
-        }
-
-        await this.repository.update({ id: updateCommentDto.id }, updateCommentDto)
-
-        return updateCommentDto;
+    if (!comment) {
+      throw new NotFoundException(`Comment ID ${id} not found`);
     }
 
-    async delete(id: number, authorization: string) {
-        const objToken = this.TokenService.findOne(authorization);
-
-        const comment = await this.repository.findOne({ where: { id } });
-
-        const objPromise = await Promise.all([objToken, comment]);
-
-        if (objPromise[0].user.id !== objPromise[1].user) {
-            throw new NotFoundException(`Not authorized`);
-        }
-
-        if (!comment) {
-            throw new NotFoundException(`Comment ID ${id} not found`);
-        }
-
-        return this.repository.remove(comment);
-    }
+    return this.repository.remove(comment);
+  }
 }
