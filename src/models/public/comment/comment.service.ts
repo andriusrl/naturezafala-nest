@@ -62,7 +62,7 @@ export class CommentService {
     const newComment = new Comment();
 
     newComment.comment = comment.comment;
-    newComment.date = comment.date;
+    newComment.date = new Date();
     newComment.user = objToken.user.id;
     newComment.point = comment.point;
 
