@@ -5,6 +5,7 @@ import { Equal, Repository } from 'typeorm';
 import { CreateCommentDto } from './dto/createComment.dto';
 import { UpdateCommentDto } from './dto/updateComment.dto';
 import { Comment } from './entities/comment.entity';
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class CommentService {
@@ -19,8 +20,10 @@ export class CommentService {
     return this.repository.find();
   }
 
-  async findAllByPoint(id: number): Promise<Comment[]> {
-    return this.repository.find({
+  // async findAllByPoint(id: number, options): Promise<Comment[]> {
+  async findAllByPoint(id: number, options): Promise<Pagination<Comment>> {
+    const skip = (options.page - 1) * options.limit;
+    const [response, total] = await this.repository.findAndCount({
       select: {
         id: true,
         comment: true,
@@ -32,7 +35,22 @@ export class CommentService {
       where: {
         point: Equal(id),
       },
+      take: options.limit,
+      skip: skip,
     });
+
+    const totalPages = Math.ceil(total / options.limit);
+
+    return {
+      items: response,
+      meta: {
+        totalItems: total,
+        totalPages: totalPages,
+        itemsPerPage: options.limit,
+        currentPage: options.page,
+        itemCount: response.length,
+      },
+    };
   }
 
   async create(
