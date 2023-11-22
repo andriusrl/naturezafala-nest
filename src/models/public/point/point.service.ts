@@ -71,9 +71,21 @@ export class PointService {
       throw new NotFoundException(`Point ID ${updatePointDto.id} not found`);
     }
 
-    await this.repository.update({ id: updatePointDto.id }, updatePointDto);
+    if (objPromise[0].user.type === 1) {
+      await this.repository.update({ id: updatePointDto.id }, updatePointDto);
 
-    return updatePointDto;
+      return updatePointDto;
+    }
+
+    await this.repository.update(
+      { id: updatePointDto.id },
+      { name: updatePointDto.name, description: updatePointDto.description },
+    );
+
+    return {
+      id: updatePointDto.id,
+      ...{ name: updatePointDto.name, description: updatePointDto.description },
+    };
   }
 
   async delete(id: number, authorization: string) {
