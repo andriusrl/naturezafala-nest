@@ -46,8 +46,8 @@ export class CommentService {
       meta: {
         totalItems: total,
         totalPages: totalPages,
-        itemsPerPage: options.limit,
-        currentPage: options.page,
+        itemsPerPage: Number(options.limit),
+        currentPage: Number(options.page),
         itemCount: response.length,
       },
     };
