@@ -66,6 +66,26 @@ export class UserController {
     return response;
   }
 
+  @Get('/:id')
+  async findOne(
+    @Headers('authorization') authorization: string,
+    @Ip() ip,
+    @Param('id') id,
+  ) {
+    const user = new User();
+    user.id = +id;
+    const response = await this.service.findOne(user);
+
+    await this.accessService.create(
+      AccessHelper.ACTION.VIEWED,
+      'user',
+      authorization,
+      ip,
+    );
+
+    return response;
+  }
+
   @Post('')
   async create(
     @Headers('authorization') authorization: string,
