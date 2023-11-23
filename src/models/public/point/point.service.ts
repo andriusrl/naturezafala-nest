@@ -5,6 +5,7 @@ import { Point } from './entities/point.entity';
 import { CreatePointDto } from './dto/createPoint.dto';
 import { UpdatePointDto } from './dto/updatePoint.dto';
 import { TokenService } from 'src/token/token.service';
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class PointService {
@@ -15,8 +16,27 @@ export class PointService {
     private readonly TokenService: TokenService,
   ) {}
 
-  async findAll(): Promise<Point[]> {
-    return this.repository.find();
+  async findAll(
+    options: { page?: number; limit?: number } = { page: 1, limit: 12 },
+  ): Promise<Pagination<Point>> {
+    const skip = (options.page - 1) * options.limit;
+    const [response, total] = await this.repository.findAndCount({
+      take: options.limit,
+      skip: skip,
+    });
+
+    const totalPages = Math.ceil(total / options.limit);
+
+    return {
+      items: response,
+      meta: {
+        totalItems: total,
+        totalPages: totalPages,
+        itemsPerPage: Number(options.limit),
+        currentPage: Number(options.page),
+        itemCount: response.length,
+      },
+    };
   }
 
   async findOne(id): Promise<Point> {

@@ -10,6 +10,7 @@ import {
   Delete,
   Patch,
   Ip,
+  Query,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { PointService } from './point.service';
@@ -18,6 +19,8 @@ import { CreatePointDto } from './dto/createPoint.dto';
 import { UpdatePointDto } from './dto/updatePoint.dto';
 import { AccessService } from 'src/access/access.service';
 import { AccessHelper } from 'src/helpers/access.helper';
+import { PaginatedDto } from 'src/common/dto/pagination.dto';
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 @Controller('point')
 export class PointController {
@@ -28,8 +31,12 @@ export class PointController {
   ) {}
 
   @Get('/')
-  async findAll(): Promise<Point[]> {
-    return this.service.findAll();
+  async findAll(
+    @Headers('authorization') authorization: string,
+    @Query() query: PaginatedDto,
+    @Ip() ip,
+  ): Promise<Pagination<Point>> {
+    return this.service.findAll(query);
   }
 
   @Get('/:id')
