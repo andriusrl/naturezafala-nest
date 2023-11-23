@@ -30,7 +30,7 @@ export class AuthService {
       secret: process.env.JWT_SECRET_KEY,
     });
 
-    this.tokenService.save(token, user.username);
+    await this.tokenService.save(token, user.username);
 
     if (refresh) {
       return {
