@@ -70,7 +70,7 @@ export class UserService {
     const user = new User();
 
     user.name = userBody.name;
-    user.birth_date = userBody.birthDate;
+    user.birthDate = userBody.birthDate;
     user.fone = userBody.fone;
     user.cpf = userBody.cpf;
     user.email = userBody.email;
