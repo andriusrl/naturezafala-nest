@@ -47,6 +47,7 @@ export class AuthService {
       username: objToken.user.email,
       token,
       name: objToken.user.name,
+      type: objToken.user.type,
     };
   }
 
