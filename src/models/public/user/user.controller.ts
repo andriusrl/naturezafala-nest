@@ -50,8 +50,8 @@ export class UserController {
   ): Promise<Pagination<User>> {
     const objToken = await this.TokenService.findOne(authorization);
 
-    if (!objToken || objToken.user.type !== 1) {
-      throw new NotFoundException('Not authorized');
+    if (objToken.user.type !== 1) {
+      throw new NotFoundException(`Not authorized`);
     }
 
     const response = this.service.findAll(query);
