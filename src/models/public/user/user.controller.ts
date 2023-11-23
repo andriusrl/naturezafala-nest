@@ -11,6 +11,7 @@ import {
   UseGuards,
   Ip,
   NotFoundException,
+  Query,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
@@ -19,6 +20,9 @@ import { AccessHelper } from 'src/helpers/access.helper';
 import { TokenService } from 'src/token/token.service';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { CreateUserDto } from './dto/createUser.dto';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { User } from './entities/user.entity';
+import { PaginatedDto } from 'src/common/dto/pagination.dto';
 
 @Controller('user')
 export class UserController {
@@ -39,18 +43,22 @@ export class UserController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('/')
-  async index(@Headers('authorization') authorization: string, @Ip() ip) {
+  async index(
+    @Headers('authorization') authorization: string,
+    @Query() query: PaginatedDto,
+    @Ip() ip,
+  ): Promise<Pagination<User>> {
     const objToken = await this.TokenService.findOne(authorization);
 
     if (!objToken || objToken.user.type !== 1) {
       throw new NotFoundException('Not authorized');
     }
 
-    const response = this.service.findAll(authorization);
+    const response = this.service.findAll(query);
 
     await this.accessService.create(
-      AccessHelper.ACTION.ADDED,
-      'comment',
+      AccessHelper.ACTION.VIEWED,
+      'user',
       authorization,
       ip,
     );
