@@ -72,11 +72,14 @@ export class UserController {
     @Ip() ip,
     @Body() user: CreateUserDto,
   ) {
-    console.log('user controller');
-    console.log(user);
     const response = await this.service.create(user);
 
-    // await this.accessService.create(AccessHelper.ACTION.ADDED, 'user', authorization, ip);
+    await this.accessService.create(
+      AccessHelper.ACTION.ADDED,
+      'user',
+      'account create',
+      ip,
+    );
 
     return response;
   }
@@ -88,6 +91,12 @@ export class UserController {
     @Ip() ip,
     @Body() user: UpdateUserDto,
   ) {
+    const objToken = await this.TokenService.findOne(authorization);
+
+    if (objToken.user.type !== 1) {
+      throw new NotFoundException(`Not authorized`);
+    }
+
     const response = await this.service.update(user, authorization);
 
     await this.accessService.create(
