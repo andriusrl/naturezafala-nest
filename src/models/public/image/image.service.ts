@@ -10,75 +10,79 @@ import { Point } from '../point/entities/point.entity';
 
 @Injectable()
 export class ImageService {
-    constructor(
-        @InjectRepository(Image)
-        private readonly repository: Repository<Image>,
-        @Inject(PointService)
-        private readonly pointService: PointService,
-        @Inject(UploadService)
-        private readonly uploadService: UploadService,
-        @Inject(TokenService)
-        private readonly TokenService: TokenService,
-    ) { }
+  constructor(
+    @InjectRepository(Image)
+    private readonly repository: Repository<Image>,
+    @Inject(PointService)
+    private readonly pointService: PointService,
+    @Inject(UploadService)
+    private readonly uploadService: UploadService,
+    @Inject(TokenService)
+    private readonly TokenService: TokenService,
+  ) {}
 
-    async findAll(): Promise<Image[]> {
-        return this.repository.find();
+  async findAll(): Promise<Image[]> {
+    return this.repository.find();
+  }
+
+  async findAllByPoint(id: number): Promise<Image[]> {
+    return this.repository.find({
+      relations: { point: true },
+      where: {
+        point: Equal(id),
+      },
+    });
+  }
+
+  async create(
+    image: Express.Multer.File,
+    idPoint: Point,
+    authorization: string,
+  ): Promise<Image> {
+    const objToken = this.TokenService.findOne(authorization);
+
+    const point = this.pointService.findOne(idPoint);
+
+    const objPromise = await Promise.all([objToken, point]);
+
+    if (!objPromise[1]) {
+      throw new NotFoundException(`Point ID ${idPoint} not found`);
     }
 
-    async findAllByPoint(id: number): Promise<Image[]> {
-        return this.repository.find({
-            relations: { point: true, },
-            where: {
-                point: Equal(id)
-            }
-        });
+    if (objPromise[0]?.user.id !== objPromise[1]?.user) {
+      if (objPromise[0].user.type !== 1) {
+        throw new NotFoundException(`Not authorized`);
+      }
     }
 
-    async create(image: Express.Multer.File, idPoint: Point, authorization: string): Promise<Image> {
+    const imageResponse = await this.uploadService.execute(image, 'point/');
 
-        const objToken = this.TokenService.findOne(authorization);
+    const newImage = new Image();
 
-        const point = this.pointService.findOne(idPoint);
+    newImage.url = imageResponse.Location;
+    newImage.point = idPoint;
 
-        const objPromise = await Promise.all([objToken, point]);
+    return this.repository.save(newImage);
+  }
 
-        if (!objPromise[1]) {
-            throw new NotFoundException(`Point ID ${idPoint} not found`);
-        }
+  async delete(id: number, authorization: string): Promise<Image> {
+    const objToken = this.TokenService.findOne(authorization);
 
-        if (objPromise[0]?.user.id !== objPromise[1]?.user) {
-            throw new NotFoundException(`Not authorized`);
-        }
+    const point = this.pointService.findOne(id);
 
-        const imageResponse = await this.uploadService.execute(image, "point/")
+    const objPromise = await Promise.all([objToken, point]);
 
-        const newImage = new Image();
+    if (objPromise[0]?.user.id !== objPromise[1]?.user) {
+      if (objPromise[0].user.type !== 1) {
+        throw new NotFoundException(`Not authorized`);
+      }
+    }
+    const image = await this.repository.findOne({ where: { id } });
 
-        newImage.url = imageResponse.Location;
-        newImage.point = idPoint;
-
-        return this.repository.save(newImage)
+    if (!image) {
+      throw new NotFoundException(`Image ID ${id} not found`);
     }
 
-    async delete(id: number, authorization: string): Promise<Image> {
-
-        const objToken = this.TokenService.findOne(authorization);
-
-        const point = this.pointService.findOne(id);
-
-        const objPromise = await Promise.all([objToken, point]);
-
-        if (objPromise[0]?.user.id !== objPromise[1]?.user) {
-            if (objPromise[0].user.type !== 1) {
-                throw new NotFoundException(`Not authorized`);
-            }
-        }
-        const image = await this.repository.findOne({ where: { id } });
-
-        if (!image) {
-            throw new NotFoundException(`Image ID ${id} not found`);
-        }
-
-        return this.repository.remove(image);
-    }
+    return this.repository.remove(image);
+  }
 }
