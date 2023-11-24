@@ -40,9 +40,7 @@ export class PointService {
   }
 
   async findAllKm(lat: number, long: number, km: number): Promise<Point[]> {
-
-    console.log('lat, long, km')
-    console.log(lat, long, km)
+    // calculating the distance from the point using the Haversine formula
 
     const differenceLat = (km / 6371) * (180 / Math.PI);
 
