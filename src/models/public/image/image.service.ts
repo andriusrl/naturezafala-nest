@@ -30,6 +30,7 @@ export class ImageService {
       relations: { point: true },
       where: {
         point: Equal(id),
+        status: Equal(true),
       },
     });
   }
