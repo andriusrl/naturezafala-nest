@@ -14,7 +14,7 @@ export class PointService {
     private readonly repository: Repository<Point>,
     @Inject(TokenService)
     private readonly TokenService: TokenService,
-  ) {}
+  ) { }
 
   async findAll(
     options: { page?: number; limit?: number } = { page: 1, limit: 12 },
@@ -37,6 +37,31 @@ export class PointService {
         itemCount: response.length,
       },
     };
+  }
+
+  async findAllKm(lat: number, long: number, km: number): Promise<Point[]> {
+
+    console.log('lat, long, km')
+    console.log(lat, long, km)
+
+    const raioDaTerra = 6371;
+
+    // Calcular a diferença máxima em latitude
+    const diferencaLat = (km / raioDaTerra) * (180 / Math.PI);
+
+    // Calcular a diferença máxima em longitude
+    const diferencaLon = (km / raioDaTerra) * (180 / Math.PI) / Math.cos(lat * Math.PI / 180);
+
+    const result = {
+      diferencaLat,
+      diferencaLon
+    }
+
+    console.log('result')
+    console.log(result)
+
+
+    return this.repository.find();
   }
 
   async findOne(id): Promise<Point> {

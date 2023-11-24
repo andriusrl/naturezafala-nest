@@ -14,27 +14,31 @@ export class UserService {
     private readonly repository: Repository<User>,
     @Inject(TokenService)
     private readonly TokenService: TokenService,
-  ) {}
+  ) { }
 
-  async findAll(options): Promise<Pagination<User>> {
-    const skip = (options.page - 1) * options.limit;
-    const [response, total] = await this.repository.findAndCount({
-      take: options.limit,
-      skip: skip,
-    });
+  async findAll(options: { page?: number; limit?: number } = { page: 1, limit: 12 },): Promise<Pagination<User>> {
+    try {
+      const skip = ((options.page) - 1) * options.limit;
+      const [response, total] = await this.repository.findAndCount({
+        take: options.limit,
+        skip: skip,
+      });
 
-    const totalPages = Math.ceil(total / options.limit);
+      const totalPages = Math.ceil(total / options.limit);
 
-    return {
-      items: response,
-      meta: {
-        totalItems: total,
-        totalPages: totalPages,
-        itemsPerPage: Number(options.limit),
-        currentPage: Number(options.page),
-        itemCount: response.length,
-      },
-    };
+      return {
+        items: response,
+        meta: {
+          totalItems: total,
+          totalPages: totalPages,
+          itemsPerPage: Number(options.limit),
+          currentPage: Number(options.page),
+          itemCount: response.length,
+        },
+      };
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   async findOne(user: User): Promise<User> {

@@ -28,20 +28,29 @@ export class PointController {
     @Inject(PointService)
     private readonly service: PointService,
     private readonly accessService: AccessService,
-  ) {}
+  ) { }
 
   @Get('/')
   async findAll(
     @Headers('authorization') authorization: string,
     @Query() query: PaginatedDto,
     @Ip() ip,
-  ): Promise<Pagination<Point>> {
+    // ): Promise<Pagination<Point>> {
+  ) {
     return this.service.findAll(query);
+  }
+
+  @Get('/km/:lat/:long/:km')
+  async findAllKm(
+    @Param('lat') lat,
+    @Param('long') long,
+    @Param('km') km,
+  ): Promise<Point[]> {
+    return this.service.findAllKm(Number(lat), Number(long), Number(km));
   }
 
   @Get('/:id')
   async findOne(
-    // @Headers('authorization') authorization: string,
     @Ip() ip,
     @Param('id') id,
   ) {

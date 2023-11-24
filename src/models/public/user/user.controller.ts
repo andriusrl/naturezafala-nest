@@ -48,6 +48,8 @@ export class UserController {
     @Query() query: PaginatedDto,
     @Ip() ip,
   ): Promise<Pagination<User>> {
+    console.log('testandoooooooo')
+    console.log(query)
     const objToken = await this.TokenService.findOne(authorization);
 
     if (objToken.user.type !== 1) {
