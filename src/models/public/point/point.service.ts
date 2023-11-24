@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { Point } from './entities/point.entity';
 import { CreatePointDto } from './dto/createPoint.dto';
 import { UpdatePointDto } from './dto/updatePoint.dto';
@@ -44,24 +44,16 @@ export class PointService {
     console.log('lat, long, km')
     console.log(lat, long, km)
 
-    const raioDaTerra = 6371;
+    const differenceLat = (km / 6371) * (180 / Math.PI);
 
-    // Calcular a diferença máxima em latitude
-    const diferencaLat = (km / raioDaTerra) * (180 / Math.PI);
+    const differenceLon = (km / 6371) * (180 / Math.PI) / Math.cos(lat * Math.PI / 180);
 
-    // Calcular a diferença máxima em longitude
-    const diferencaLon = (km / raioDaTerra) * (180 / Math.PI) / Math.cos(lat * Math.PI / 180);
-
-    const result = {
-      diferencaLat,
-      diferencaLon
-    }
-
-    console.log('result')
-    console.log(result)
-
-
-    return this.repository.find();
+    return await this.repository.find({
+      where: {
+        latitude: Between(lat - differenceLat, lat + differenceLat),
+        longitude: Between(long - differenceLon, long + differenceLon),
+      },
+    });
   }
 
   async findOne(id): Promise<Point> {
