@@ -98,7 +98,11 @@ export class PointService {
     return this.repository.save(newPoint);
   }
 
-  async update(updatePointDto: UpdatePointDto, authorization: string) {
+  async update(
+    updatePointDto: UpdatePointDto,
+    status: boolean,
+    authorization: string,
+  ) {
     const objToken = this.TokenService.findOne(authorization);
 
     const point = this.repository.findOne({ where: { id: updatePointDto.id } });
@@ -116,10 +120,34 @@ export class PointService {
     }
 
     if (objPromise[0].user.type === 1) {
-      await this.repository.update({ id: updatePointDto.id }, updatePointDto);
+      await this.repository.update(
+        { id: updatePointDto.id },
+        { ...updatePointDto, status },
+      );
 
-      return updatePointDto;
+      return { ...updatePointDto, status };
     }
+
+    // if (objPromise[0].user.type === 1) {
+    //   console.log('aqqqqqqqqqqqqqqqq');
+    //   await this.repository.update(
+    //     { id: updatePointDto.id },
+    //     {
+    //       name: updatePointDto.name,
+    //       description: updatePointDto.description,
+    //       status,
+    //     },
+    //   );
+
+    //   return {
+    //     id: updatePointDto.id,
+    //     ...{
+    //       name: updatePointDto.name,
+    //       description: updatePointDto.description,
+    //       status,
+    //     },
+    //   };
+    // }
 
     await this.repository.update(
       { id: updatePointDto.id },
