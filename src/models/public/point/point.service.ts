@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Repository } from 'typeorm';
+import { Between, Equal, Repository } from 'typeorm';
 import { Point } from './entities/point.entity';
 import { CreatePointDto } from './dto/createPoint.dto';
 import { UpdatePointDto } from './dto/updatePoint.dto';
@@ -14,7 +14,7 @@ export class PointService {
     private readonly repository: Repository<Point>,
     @Inject(TokenService)
     private readonly TokenService: TokenService,
-  ) { }
+  ) {}
 
   async findAll(
     options: { page?: number; limit?: number } = { page: 1, limit: 12 },
@@ -44,12 +44,14 @@ export class PointService {
 
     const differenceLat = (km / 6371) * (180 / Math.PI);
 
-    const differenceLon = (km / 6371) * (180 / Math.PI) / Math.cos(lat * Math.PI / 180);
+    const differenceLon =
+      ((km / 6371) * (180 / Math.PI)) / Math.cos((lat * Math.PI) / 180);
 
     return await this.repository.find({
       where: {
         latitude: Between(lat - differenceLat, lat + differenceLat),
         longitude: Between(long - differenceLon, long + differenceLon),
+        status: Equal(true),
       },
     });
   }

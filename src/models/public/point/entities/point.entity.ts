@@ -32,6 +32,9 @@ export class Point {
 
   @Column({ type: 'int4' })
   longitude: number;
+  
+  @Column({ type: 'boolean' })
+  status: boolean;
 
   @Column({ name: 'pollution_type', type: 'int4' })
   @ManyToOne((type) => PollutionType, (pollutionType) => pollutionType.point)

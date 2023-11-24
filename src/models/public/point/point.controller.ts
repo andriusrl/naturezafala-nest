@@ -28,7 +28,7 @@ export class PointController {
     @Inject(PointService)
     private readonly service: PointService,
     private readonly accessService: AccessService,
-  ) { }
+  ) {}
 
   @Get('/')
   async findAll(
@@ -50,10 +50,7 @@ export class PointController {
   }
 
   @Get('/:id')
-  async findOne(
-    @Ip() ip,
-    @Param('id') id,
-  ) {
+  async findOne(@Ip() ip, @Param('id') id) {
     const response = await this.service.findOne(+id);
 
     // await this.accessService.create(
