@@ -18,7 +18,14 @@ export class PointService {
 
   async findAll(
     options: { page?: number; limit?: number } = { page: 1, limit: 12 },
+    authorization: string,
   ): Promise<Pagination<Point>> {
+    const objToken = await this.TokenService.findOne(authorization);
+
+    if (objToken.user.type !== 1) {
+      throw new NotFoundException(`Not authorized`);
+    }
+
     const skip = (options.page - 1) * options.limit;
     const [response, total] = await this.repository.findAndCount({
       take: options.limit,

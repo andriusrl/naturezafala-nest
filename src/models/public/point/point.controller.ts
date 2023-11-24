@@ -30,6 +30,7 @@ export class PointController {
     private readonly accessService: AccessService,
   ) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Get('/')
   async findAll(
     @Headers('authorization') authorization: string,
@@ -37,7 +38,7 @@ export class PointController {
     @Ip() ip,
     // ): Promise<Pagination<Point>> {
   ) {
-    return this.service.findAll(query);
+    return this.service.findAll(query, authorization);
   }
 
   @Get('/km/:lat/:long/:km')
