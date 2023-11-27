@@ -12,6 +12,7 @@ import {
   UseGuards,
   UseInterceptors,
   Query,
+  Ip,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ImageService } from './image.service';
@@ -20,11 +21,16 @@ import { CreateImageDto } from './dto/createImage.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PaginatedDto } from 'src/common/dto/pagination.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
+import { AccessService } from 'src/access/access.service';
+import { AccessHelper } from 'src/helpers/access.helper';
 
 @Controller('image')
 export class ImageController {
-  @Inject(ImageService)
-  private readonly service: ImageService;
+  constructor(
+    @Inject(ImageService)
+    private readonly service: ImageService,
+    private readonly accessService: AccessService,
+  ) {}
 
   @UseGuards(AuthGuard('jwt'))
   @Get('/')
@@ -38,6 +44,29 @@ export class ImageController {
   @Get('/point/:id')
   async findCommentsByPoint(@Param('id') id: string): Promise<Image[]> {
     return this.service.findAllByPoint(+id);
+  }
+
+  @Post('/search')
+  async search(
+    @Headers('authorization') authorization: string,
+    @Query() query: PaginatedDto,
+    @Ip() ip,
+    @Body() search: { text: string },
+  ): Promise<Pagination<Image>> {
+    const response = await this.service.search(
+      search.text,
+      query,
+      authorization,
+    );
+
+    await this.accessService.create(
+      AccessHelper.ACTION.VIEWED,
+      'user',
+      authorization,
+      ip,
+    );
+
+    return response;
   }
 
   @UseGuards(AuthGuard('jwt'))

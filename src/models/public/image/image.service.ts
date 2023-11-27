@@ -1,13 +1,13 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Equal, Repository } from 'typeorm';
+import { Equal, ILike, Repository } from 'typeorm';
 import { Image } from './entities/image.entity';
 import { CreateImageDto } from './dto/createImage.dto';
 import { UploadService } from 'src/common/s3/upload.service';
 import { PointService } from '../point/point.service';
 import { TokenService } from 'src/token/token.service';
 import { Point } from '../point/entities/point.entity';
-import { Pagination } from 'nestjs-typeorm-paginate';
+import { Pagination, paginateRaw } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class ImageService {
@@ -72,6 +72,76 @@ export class ImageService {
         status: Equal(true),
       },
     });
+  }
+
+  async search(
+    search: string,
+    options: { page?: number; limit?: number } = { page: 1, limit: 12 },
+    authorization: string,
+  ): Promise<Pagination<Image>> {
+    try {
+      const objToken = await this.tokenService.findOne(authorization);
+
+      if (objToken.user.type !== 1) {
+        throw new NotFoundException(`Not authorized`);
+      }
+
+      // const skip = (options.page - 1) * options.limit;
+      // const [response, total] = await this.repository.findAndCount({
+      //   relations: { point: { pollutionType: true } },
+      //   select: {
+      //     id: true,
+      //     url: true,
+      //     status: true,
+      //     point: {
+      //       pollutionType: {
+      //         name: true,
+      //       },
+      //     },
+      //   },
+      //   take: options.limit,
+      //   skip: skip,
+      //   where: { point: { name: ILike(`%${search}%`) } },
+      // });
+
+      // const totalPages = Math.ceil(total / options.limit);
+
+      // return {
+      //   items: response,
+      //   meta: {
+      //     totalItems: total,
+      //     totalPages: totalPages,
+      //     itemsPerPage: Number(options.limit),
+      //     currentPage: Number(options.page),
+      //     itemCount: response.length,
+      //   },
+      // };
+
+      // Não funcionou, procurar porque depois
+
+      const queryBuilder = this.repository
+        .createQueryBuilder('i')
+        .select([
+          'i.id as id',
+          'i.url as url',
+          'i.point as point',
+          'point.name as pointName',
+          'pollutionType.name as pollutionTypeName',
+        ])
+        .leftJoin('i.point', 'point')
+        .leftJoin('point.pollutionType', 'pollutionType')
+        .orderBy('i.id', 'DESC');
+
+      if (search) {
+        queryBuilder.andWhere('lower(point.name) ~ :search', {
+          search: search.toLowerCase(),
+        });
+      }
+
+      return paginateRaw(queryBuilder, { limit: 12, page: 1 });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async create(

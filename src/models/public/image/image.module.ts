@@ -6,10 +6,16 @@ import { ImageService } from './image.service';
 import { PointModule } from '../point/point.module';
 import { UploadService } from 'src/common/s3/upload.service';
 import { TokenModule } from 'src/token/token.module';
+import { AccessModule } from 'src/access/access.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Image]), PointModule, TokenModule],
-    controllers: [ImageController],
-    providers: [ImageService, UploadService],
+  imports: [
+    TypeOrmModule.forFeature([Image]),
+    PointModule,
+    TokenModule,
+    AccessModule,
+  ],
+  controllers: [ImageController],
+  providers: [ImageService, UploadService],
 })
-export class ImageModule { }
+export class ImageModule {}
