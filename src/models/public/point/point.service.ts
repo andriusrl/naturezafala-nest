@@ -158,6 +158,8 @@ export class PointService {
     }
 
     if (objPromise[0].user.type === 1) {
+      console.log('tipo 1');
+      console.log('status', status);
       await this.repository.update(
         { id: updatePointDto.id },
         { ...updatePointDto, status },

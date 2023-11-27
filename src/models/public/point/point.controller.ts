@@ -116,7 +116,7 @@ export class PointController {
   ) {
     const response = await this.service.update(
       point,
-      Boolean(status),
+      status === 'true' ? true : false,
       authorization,
     );
 
