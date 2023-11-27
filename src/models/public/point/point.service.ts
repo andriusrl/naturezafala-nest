@@ -158,8 +158,6 @@ export class PointService {
     }
 
     if (objPromise[0].user.type === 1) {
-      console.log('tipo 1');
-      console.log('status', status);
       await this.repository.update(
         { id: updatePointDto.id },
         { ...updatePointDto, status },
@@ -167,27 +165,6 @@ export class PointService {
 
       return { ...updatePointDto, status };
     }
-
-    // if (objPromise[0].user.type === 1) {
-    //   console.log('aqqqqqqqqqqqqqqqq');
-    //   await this.repository.update(
-    //     { id: updatePointDto.id },
-    //     {
-    //       name: updatePointDto.name,
-    //       description: updatePointDto.description,
-    //       status,
-    //     },
-    //   );
-
-    //   return {
-    //     id: updatePointDto.id,
-    //     ...{
-    //       name: updatePointDto.name,
-    //       description: updatePointDto.description,
-    //       status,
-    //     },
-    //   };
-    // }
 
     await this.repository.update(
       { id: updatePointDto.id },
