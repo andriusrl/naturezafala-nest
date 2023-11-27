@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Equal, Repository } from 'typeorm';
+import { Between, Equal, ILike, Repository } from 'typeorm';
 import { Point } from './entities/point.entity';
 import { CreatePointDto } from './dto/createPoint.dto';
 import { UpdatePointDto } from './dto/updatePoint.dto';
@@ -13,14 +13,14 @@ export class PointService {
     @InjectRepository(Point)
     private readonly repository: Repository<Point>,
     @Inject(TokenService)
-    private readonly TokenService: TokenService,
+    private readonly tokenService: TokenService,
   ) {}
 
   async findAll(
     options: { page?: number; limit?: number } = { page: 1, limit: 12 },
     authorization: string,
   ): Promise<Pagination<Point>> {
-    const objToken = await this.TokenService.findOne(authorization);
+    const objToken = await this.tokenService.findOne(authorization);
 
     if (objToken.user.type !== 1) {
       throw new NotFoundException(`Not authorized`);
@@ -79,11 +79,49 @@ export class PointService {
     });
   }
 
+  async search(
+    search: string,
+    options: { page?: number; limit?: number } = { page: 1, limit: 12 },
+    authorization: string,
+  ): Promise<Pagination<Point>> {
+    try {
+      const objToken = await this.tokenService.findOne(authorization);
+
+      if (objToken.user.type !== 1) {
+        throw new NotFoundException(`Not authorized`);
+      }
+
+      const skip = (options.page - 1) * options.limit;
+      const [response, total] = await this.repository.findAndCount({
+        take: options.limit,
+        skip: skip,
+        where: {
+          name: ILike(`%${search}%`),
+        },
+      });
+
+      const totalPages = Math.ceil(total / options.limit);
+
+      return {
+        items: response,
+        meta: {
+          totalItems: total,
+          totalPages: totalPages,
+          itemsPerPage: Number(options.limit),
+          currentPage: Number(options.page),
+          itemCount: response.length,
+        },
+      };
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   async createPoint(
     point: CreatePointDto,
     authorization: string,
   ): Promise<Point> {
-    const objToken = await this.TokenService.findOne(authorization);
+    const objToken = await this.tokenService.findOne(authorization);
 
     const newPoint = new Point();
 
@@ -103,7 +141,7 @@ export class PointService {
     status: boolean,
     authorization: string,
   ) {
-    const objToken = this.TokenService.findOne(authorization);
+    const objToken = this.tokenService.findOne(authorization);
 
     const point = this.repository.findOne({ where: { id: updatePointDto.id } });
 
@@ -161,7 +199,7 @@ export class PointService {
   }
 
   async delete(id: number, authorization: string) {
-    const objToken = this.TokenService.findOne(authorization);
+    const objToken = this.tokenService.findOne(authorization);
 
     const point = await this.repository.findOne({ where: { id } });
 

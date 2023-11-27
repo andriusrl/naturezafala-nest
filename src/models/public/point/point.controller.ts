@@ -83,6 +83,29 @@ export class PointController {
     return response;
   }
 
+  @Post('/search')
+  async search(
+    @Headers('authorization') authorization: string,
+    @Query() query: PaginatedDto,
+    @Ip() ip,
+    @Body() search: { text: string },
+  ): Promise<Pagination<Point>> {
+    const response = await this.service.search(
+      search.text,
+      query,
+      authorization,
+    );
+
+    await this.accessService.create(
+      AccessHelper.ACTION.VIEWED,
+      'user',
+      authorization,
+      ip,
+    );
+
+    return response;
+  }
+
   @UseGuards(AuthGuard('jwt'))
   @Patch('/:status')
   async updatePoint(
