@@ -66,7 +66,7 @@ export class UserController {
     return response;
   }
 
-  @Get('/search')
+  @Post('/search')
   async search(
     @Headers('authorization') authorization: string,
     @Query() query: PaginatedDto,
