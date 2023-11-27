@@ -23,6 +23,7 @@ import { PaginatedDto } from 'src/common/dto/pagination.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { AccessService } from 'src/access/access.service';
 import { AccessHelper } from 'src/helpers/access.helper';
+import { UpdateImageDto } from './dto/updateImage.dto';
 
 @Controller('image')
 export class ImageController {
@@ -82,9 +83,26 @@ export class ImageController {
     @Param('idPoint') idPoint,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    console.log('file');
-    console.log(file);
     return this.service.create(file, idPoint, authorization);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('/')
+  async updatePoint(
+    @Headers('authorization') authorization: string,
+    @Ip() ip,
+    @Body() point: UpdateImageDto,
+  ) {
+    const response = await this.service.update(point, authorization);
+
+    await this.accessService.create(
+      AccessHelper.ACTION.UPDATE,
+      'point',
+      authorization,
+      ip,
+    );
+
+    return response;
   }
 
   @UseGuards(AuthGuard('jwt'))

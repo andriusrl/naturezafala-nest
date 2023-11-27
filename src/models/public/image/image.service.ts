@@ -8,6 +8,7 @@ import { PointService } from '../point/point.service';
 import { TokenService } from 'src/token/token.service';
 import { Point } from '../point/entities/point.entity';
 import { Pagination, paginateRaw } from 'nestjs-typeorm-paginate';
+import { UpdateImageDto } from './dto/updateImage.dto';
 
 @Injectable()
 export class ImageService {
@@ -80,6 +81,25 @@ export class ImageService {
         id: Equal(id),
       },
     });
+  }
+
+  async update(updateImageDto: UpdateImageDto, authorization: string) {
+    const objToken = await this.tokenService.findOne(authorization);
+
+    if (objToken.user.type !== 1) {
+      throw new NotFoundException(`Not authorized`);
+    }
+
+    if (!updateImageDto?.id) {
+      throw new NotFoundException(`Image ID ${updateImageDto.id} not found`);
+    }
+
+    await this.repository.update(
+      { id: updateImageDto.id },
+      { ...updateImageDto, status: updateImageDto.status },
+    );
+
+    return { ...updateImageDto, status: updateImageDto.status };
   }
 
   async search(
