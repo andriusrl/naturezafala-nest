@@ -72,6 +72,7 @@ export class PointService {
         date: true,
         latitude: true,
         longitude: true,
+        status: true,
         pollutionType: { id: true, name: true },
       },
       relations: { pollutionType: true },
