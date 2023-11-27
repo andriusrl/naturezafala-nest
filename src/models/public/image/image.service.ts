@@ -74,6 +74,14 @@ export class ImageService {
     });
   }
 
+  async findOne(id: number): Promise<Image> {
+    return this.repository.findOne({
+      where: {
+        id: Equal(id),
+      },
+    });
+  }
+
   async search(
     search: string,
     options: { page?: number; limit?: number } = { page: 1, limit: 12 },

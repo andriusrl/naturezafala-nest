@@ -41,6 +41,11 @@ export class ImageController {
     return this.service.findAll(query, authorization);
   }
 
+  @Get('/:id')
+  async findOne(@Param('id') id: string): Promise<Image> {
+    return this.service.findOne(+id);
+  }
+
   @Get('/point/:id')
   async findCommentsByPoint(@Param('id') id: string): Promise<Image[]> {
     return this.service.findAllByPoint(+id);
