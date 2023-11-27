@@ -137,11 +137,7 @@ export class PointService {
     return this.repository.save(newPoint);
   }
 
-  async update(
-    updatePointDto: UpdatePointDto,
-    status: boolean,
-    authorization: string,
-  ) {
+  async update(updatePointDto: UpdatePointDto, authorization: string) {
     const objToken = this.tokenService.findOne(authorization);
 
     const point = this.repository.findOne({ where: { id: updatePointDto.id } });
@@ -161,10 +157,10 @@ export class PointService {
     if (objPromise[0].user.type === 1) {
       await this.repository.update(
         { id: updatePointDto.id },
-        { ...updatePointDto, status },
+        { ...updatePointDto, status: updatePointDto.status },
       );
 
-      return { ...updatePointDto, status };
+      return { ...updatePointDto, status: updatePointDto.status };
     }
 
     await this.repository.update(

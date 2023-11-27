@@ -107,18 +107,15 @@ export class PointController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Patch('/:status')
+  @Patch('/')
   async updatePoint(
     @Headers('authorization') authorization: string,
     @Ip() ip,
     @Body() point: UpdatePointDto,
-    @Param('status') status: string,
   ) {
-    const response = await this.service.update(
-      point,
-      status === 'true' ? true : false,
-      authorization,
-    );
+    console.log('point', point);
+
+    const response = await this.service.update(point, authorization);
 
     await this.accessService.create(
       AccessHelper.ACTION.UPDATE,
