@@ -113,8 +113,6 @@ export class PointController {
     @Ip() ip,
     @Body() point: UpdatePointDto,
   ) {
-    console.log('point', point);
-
     const response = await this.service.update(point, authorization);
 
     await this.accessService.create(

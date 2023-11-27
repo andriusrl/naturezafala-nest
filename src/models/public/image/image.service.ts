@@ -7,6 +7,7 @@ import { UploadService } from 'src/common/s3/upload.service';
 import { PointService } from '../point/point.service';
 import { TokenService } from 'src/token/token.service';
 import { Point } from '../point/entities/point.entity';
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class ImageService {
@@ -18,11 +19,49 @@ export class ImageService {
     @Inject(UploadService)
     private readonly uploadService: UploadService,
     @Inject(TokenService)
-    private readonly TokenService: TokenService,
+    private readonly tokenService: TokenService,
   ) {}
 
-  async findAll(): Promise<Image[]> {
-    return this.repository.find();
+  async findAll(
+    options: { page?: number; limit?: number } = { page: 1, limit: 12 },
+    authorization: string,
+  ): Promise<Pagination<Image>> {
+    const objToken = await this.tokenService.findOne(authorization);
+
+    if (objToken.user.type !== 1) {
+      throw new NotFoundException(`Not authorized`);
+    }
+
+    const skip = (options.page - 1) * options.limit;
+    const [response, total] = await this.repository.findAndCount({
+      relations: { point: { pollutionType: true } },
+      select: {
+        id: true,
+        url: true,
+        status: true,
+        point: {
+          name: true,
+          pollutionType: {
+            name: true,
+          },
+        },
+      },
+      take: options.limit,
+      skip: skip,
+    });
+
+    const totalPages = Math.ceil(total / options.limit);
+
+    return {
+      items: response,
+      meta: {
+        totalItems: total,
+        totalPages: totalPages,
+        itemsPerPage: Number(options.limit),
+        currentPage: Number(options.page),
+        itemCount: response.length,
+      },
+    };
   }
 
   async findAllByPoint(id: number): Promise<Image[]> {
@@ -40,7 +79,7 @@ export class ImageService {
     idPoint: Point,
     authorization: string,
   ): Promise<Image> {
-    const objToken = this.TokenService.findOne(authorization);
+    const objToken = this.tokenService.findOne(authorization);
 
     const point = this.pointService.findOne(idPoint);
 
@@ -67,7 +106,7 @@ export class ImageService {
   }
 
   async delete(id: number, authorization: string): Promise<Image> {
-    const objToken = this.TokenService.findOne(authorization);
+    const objToken = this.tokenService.findOne(authorization);
 
     const point = this.pointService.findOne(id);
 

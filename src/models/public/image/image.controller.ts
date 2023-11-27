@@ -11,12 +11,15 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ImageService } from './image.service';
 import { Image } from './entities/image.entity';
 import { CreateImageDto } from './dto/createImage.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { PaginatedDto } from 'src/common/dto/pagination.dto';
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 @Controller('image')
 export class ImageController {
@@ -25,8 +28,11 @@ export class ImageController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('/')
-  async index(): Promise<Image[]> {
-    return this.service.findAll();
+  async index(
+    @Headers('authorization') authorization: string,
+    @Query() query: PaginatedDto,
+  ): Promise<Pagination<Image>> {
+    return this.service.findAll(query, authorization);
   }
 
   @Get('/point/:id')

@@ -32,7 +32,7 @@ export class Point {
 
   @Column({ type: 'int4' })
   longitude: number;
-  
+
   @Column({ type: 'boolean' })
   status: boolean;
 
