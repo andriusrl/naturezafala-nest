@@ -1,12 +1,11 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, ILike } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/createUser.dto';
 import { TokenService } from 'src/token/token.service';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
-
 @Injectable()
 export class UserService {
   constructor(
@@ -14,11 +13,19 @@ export class UserService {
     private readonly repository: Repository<User>,
     @Inject(TokenService)
     private readonly TokenService: TokenService,
-  ) { }
+  ) {}
 
-  async findAll(options: { page?: number; limit?: number } = { page: 1, limit: 12 },): Promise<Pagination<User>> {
+  async findAll(
+    options: { page?: number; limit?: number } = { page: 1, limit: 12 },
+    authorization: string,
+  ): Promise<Pagination<User>> {
     try {
-      const skip = ((options.page) - 1) * options.limit;
+      const objToken = await this.TokenService.findOne(authorization);
+
+      if (objToken.user.type !== 1) {
+        throw new NotFoundException(`Not authorized`);
+      }
+      const skip = (options.page - 1) * options.limit;
       const [response, total] = await this.repository.findAndCount({
         take: options.limit,
         skip: skip,
@@ -37,7 +44,7 @@ export class UserService {
         },
       };
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
   }
 
@@ -58,6 +65,44 @@ export class UserService {
     });
 
     return response;
+  }
+
+  async search(
+    search: string,
+    options: { page?: number; limit?: number } = { page: 1, limit: 12 },
+    authorization: string,
+  ): Promise<Pagination<User>> {
+    try {
+      const objToken = await this.TokenService.findOne(authorization);
+
+      if (objToken.user.type !== 1) {
+        throw new NotFoundException(`Not authorized`);
+      }
+
+      const skip = (options.page - 1) * options.limit;
+      const [response, total] = await this.repository.findAndCount({
+        take: options.limit,
+        skip: skip,
+        where: {
+          name: ILike(`%${search}%`),
+        },
+      });
+
+      const totalPages = Math.ceil(total / options.limit);
+
+      return {
+        items: response,
+        meta: {
+          totalItems: total,
+          totalPages: totalPages,
+          itemsPerPage: Number(options.limit),
+          currentPage: Number(options.page),
+          itemCount: response.length,
+        },
+      };
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async findOneByEmail(email: string): Promise<User> {

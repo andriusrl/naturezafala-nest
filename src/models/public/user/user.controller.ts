@@ -48,15 +48,36 @@ export class UserController {
     @Query() query: PaginatedDto,
     @Ip() ip,
   ): Promise<Pagination<User>> {
-    console.log('testandoooooooo')
-    console.log(query)
     const objToken = await this.TokenService.findOne(authorization);
 
     if (objToken.user.type !== 1) {
       throw new NotFoundException(`Not authorized`);
     }
 
-    const response = this.service.findAll(query);
+    const response = this.service.findAll(query, authorization);
+
+    await this.accessService.create(
+      AccessHelper.ACTION.VIEWED,
+      'user',
+      authorization,
+      ip,
+    );
+
+    return response;
+  }
+
+  @Get('/search')
+  async search(
+    @Headers('authorization') authorization: string,
+    @Query() query: PaginatedDto,
+    @Ip() ip,
+    @Body() search: { text: string },
+  ): Promise<Pagination<User>> {
+    const response = await this.service.search(
+      search.text,
+      query,
+      authorization,
+    );
 
     await this.accessService.create(
       AccessHelper.ACTION.VIEWED,
@@ -130,18 +151,4 @@ export class UserController {
 
     return response;
   }
-
-  // @UseGuards(AuthGuard('jwt'))
-  // @Delete('/:id')
-  // async deleteFile(
-  //     @Headers('authorization') authorization: string,
-  //     @Ip() ip,
-  //     @Param('id') id,
-  // ) {
-  //     const response = await this.service.delete(+id, authorization);
-
-  //     await this.accessService.create(AccessHelper.ACTION.UPDATE, 'comment', authorization, ip);
-
-  //     return response;
-  // }
 }
