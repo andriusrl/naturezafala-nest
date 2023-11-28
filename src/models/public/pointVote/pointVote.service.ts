@@ -17,8 +17,7 @@ export class PointVoteService {
     return this.repository.find();
   }
 
-  async findAllByPoint(id: number) {
-    //   async findAllByPoint(id: number): Promise<PointVote[]> {
+  async findAllByPoint(id: number, authorization: string) {
     const responseTrue = this.repository.findAndCount({
       select: {
         vote: true,
@@ -40,6 +39,27 @@ export class PointVoteService {
     });
 
     const response = await Promise.all([responseTrue, responseFalse]);
+
+    const objToken = await this.TokenService.findOne(authorization);
+
+    const responseUser = await this.repository.findAndCount({
+      select: {
+        vote: true,
+      },
+      where: {
+        point: Equal(id),
+        vote: Equal(false),
+        user: Equal(objToken.user.id),
+      },
+    });
+
+    if (responseUser[0][0]?.vote !== undefined) {
+      return {
+        true: response[0][1],
+        false: response[1][1],
+        vote: responseUser[0][0]?.vote,
+      };
+    }
 
     return { true: response[0][1], false: response[1][1] };
   }

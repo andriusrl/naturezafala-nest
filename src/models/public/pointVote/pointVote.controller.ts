@@ -35,8 +35,11 @@ export class PointVoteController {
   }
 
   @Get('/point/:id')
-  async findCommentsByPoint(@Param('id') id: string) {
-    return this.service.findAllByPoint(+id);
+  async findCommentsByPoint(
+    @Param('id') id: string,
+    @Headers('authorization') authorization: string,
+  ) {
+    return this.service.findAllByPoint(+id, authorization);
   }
 
   @UseGuards(AuthGuard('jwt'))
