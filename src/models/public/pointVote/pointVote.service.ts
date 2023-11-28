@@ -110,7 +110,12 @@ export class PointVoteService {
 
     partialPointVote.vote = voteBody.vote;
 
-    return this.repository.save(partialPointVote);
+    await this.repository.update(
+      { point: idPoint, user: objToken.user },
+      partialPointVote,
+    );
+
+    return partialPointVote;
   }
 
   async delete(idPoint: number, authorization: string): Promise<PointVote> {
