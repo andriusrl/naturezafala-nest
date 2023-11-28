@@ -86,11 +86,11 @@ export class PointService {
     authorization: string,
   ): Promise<Pagination<Point>> {
     try {
-      const objToken = await this.tokenService.findOne(authorization);
+      // const objToken = await this.tokenService.findOne(authorization);
 
-      if (objToken.user.type !== 1) {
-        throw new NotFoundException(`Not authorized`);
-      }
+      // if (objToken.user.type !== 1) {
+      //   throw new NotFoundException(`Not authorized`);
+      // }
 
       const skip = (options.page - 1) * options.limit;
       const [response, total] = await this.repository.findAndCount({
