@@ -80,6 +80,40 @@ export class PointService {
     });
   }
 
+  async findMyPoints(
+    options: { page?: number; limit?: number } = { page: 1, limit: 12 },
+    authorization: string,
+  ): Promise<Pagination<Point>> {
+    try {
+      const objToken = await this.tokenService.findOne(authorization);
+
+      const skip = (options.page - 1) * options.limit;
+      const [response, total] = await this.repository.findAndCount({
+        take: options.limit,
+        skip: skip,
+        where: {
+          status: Equal(true),
+          user: Equal(objToken.user.id),
+        },
+      });
+
+      const totalPages = Math.ceil(total / options.limit);
+
+      return {
+        items: response,
+        meta: {
+          totalItems: total,
+          totalPages: totalPages,
+          itemsPerPage: Number(options.limit),
+          currentPage: Number(options.page),
+          itemCount: response.length,
+        },
+      };
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   async search(
     search: string,
     options: { page?: number; limit?: number } = { page: 1, limit: 12 },

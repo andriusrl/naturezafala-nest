@@ -10,7 +10,7 @@ export class PointVoteService {
     @InjectRepository(PointVote)
     private readonly repository: Repository<PointVote>,
     @Inject(TokenService)
-    private readonly TokenService: TokenService,
+    private readonly tokenService: TokenService,
   ) {}
 
   async findAll(): Promise<PointVote[]> {
@@ -40,7 +40,7 @@ export class PointVoteService {
 
     const response = await Promise.all([responseTrue, responseFalse]);
 
-    const objToken = await this.TokenService.findOne(authorization);
+    const objToken = await this.tokenService.findOne(authorization);
 
     const responseUser = await this.repository.findAndCount({
       select: {
@@ -78,7 +78,7 @@ export class PointVoteService {
       });
     }
 
-    const objToken = await this.TokenService.findOne(point.authorization);
+    const objToken = await this.tokenService.findOne(point.authorization);
 
     return this.repository.find({
       where: {
@@ -89,7 +89,7 @@ export class PointVoteService {
   }
 
   async create(idPoint, voteBody, authorization: string): Promise<PointVote> {
-    const objToken = await this.TokenService.findOne(authorization);
+    const objToken = await this.tokenService.findOne(authorization);
 
     const objPointVote = await this.findByPoint({
       id: idPoint,
@@ -119,7 +119,7 @@ export class PointVoteService {
   }
 
   async delete(idPoint: number, authorization: string): Promise<PointVote> {
-    const objToken = await this.TokenService.findOne(authorization);
+    const objToken = await this.tokenService.findOne(authorization);
 
     const objPointVote = await this.findByPoint({
       id: idPoint,

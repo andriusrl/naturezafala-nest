@@ -41,6 +41,27 @@ export class PointController {
     return this.service.findAll(query, authorization);
   }
 
+  @Get('/mypoints')
+  async findMyPoints(
+    @Headers('authorization') authorization: string,
+    @Query() query: PaginatedDto,
+    @Ip() ip,
+  ): Promise<Pagination<Point>> {
+    const response = await this.service.findMyPoints(
+      query,
+      authorization,
+    );
+
+    await this.accessService.create(
+      AccessHelper.ACTION.VIEWED,
+      'user',
+      authorization,
+      ip,
+    );
+
+    return response;
+  }
+
   @Get('/km/:lat/:long/:km')
   async findAllKm(
     @Param('lat') lat,
