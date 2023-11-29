@@ -69,15 +69,19 @@ export class PointController {
   }
 
   @Get('/:id')
-  async findOne(@Ip() ip, @Param('id') id) {
-    const response = await this.service.findOne(+id);
+  async findOne(
+    @Ip() ip,
+    @Param('id') id,
+    @Headers('authorization') authorization: string,
+  ) {
+    const response = await this.service.findOne(+id, authorization);
 
-    // await this.accessService.create(
-    //   AccessHelper.ACTION.VIEWED,
-    //   'point',
-    //   authorization,
-    //   ip,
-    // );
+    await this.accessService.create(
+      AccessHelper.ACTION.VIEWED,
+      'point',
+      authorization,
+      ip,
+    );
 
     return response;
   }

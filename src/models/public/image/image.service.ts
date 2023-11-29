@@ -176,10 +176,11 @@ export class ImageService {
     image: Express.Multer.File,
     idPoint: Point,
     authorization: string,
-  ): Promise<Image> {
+  ) {
+    // ): Promise<Image> {
     const objToken = this.tokenService.findOne(authorization);
 
-    const point = this.pointService.findOne(idPoint);
+    const point = this.pointService.findOne(idPoint, authorization);
 
     const objPromise = await Promise.all([objToken, point]);
 

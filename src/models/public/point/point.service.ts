@@ -63,7 +63,34 @@ export class PointService {
     });
   }
 
-  async findOne(id): Promise<Point> {
+  async findOne(id, authorization?): Promise<Point> {
+    console.log('como chegar authorization', authorization);
+
+    if (authorization) {
+      const objToken = await this.tokenService.findOne(authorization);
+      console.log('entrou aq');
+
+      const responseOwnsPoint = await this.repository.findOne({
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          date: true,
+          latitude: true,
+          longitude: true,
+          status: true,
+          user: true,
+          pollutionType: { id: true, name: true },
+        },
+        relations: { pollutionType: true },
+        where: { id, user: Equal(objToken?.user?.id) },
+      });
+      console.log('responseOwnsPoint', responseOwnsPoint);
+      if (responseOwnsPoint?.user === objToken?.user?.id) {
+        return responseOwnsPoint;
+      }
+    }
+
     return this.repository.findOne({
       select: {
         id: true,
