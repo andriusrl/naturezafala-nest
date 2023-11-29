@@ -98,6 +98,7 @@ export class PointService {
         skip: skip,
         where: {
           name: ILike(`%${search}%`),
+          status: Equal(true),
         },
       });
 
