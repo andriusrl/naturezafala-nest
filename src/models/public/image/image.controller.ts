@@ -48,8 +48,11 @@ export class ImageController {
   }
 
   @Get('/point/:id')
-  async findCommentsByPoint(@Param('id') id: string): Promise<Image[]> {
-    return this.service.findAllByPoint(+id);
+  async findImagesByPoint(
+    @Param('id') id: string,
+    @Headers('authorization') authorization: string,
+  ): Promise<Image[]> {
+    return this.service.findAllByPoint(+id, authorization);
   }
 
   @Post('/search')

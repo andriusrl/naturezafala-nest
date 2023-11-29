@@ -65,7 +65,20 @@ export class ImageService {
     };
   }
 
-  async findAllByPoint(id: number): Promise<Image[]> {
+  async findAllByPoint(id: number, authorization?): Promise<Image[]> {
+    const objToken = await this.tokenService.findOne(authorization);
+
+    const objPoint = await this.pointService.findOne(id, authorization);
+
+    if (objToken !== null && objToken?.user.id === objPoint?.user) {
+      return this.repository.find({
+        relations: { point: true },
+        where: {
+          point: Equal(id),
+        },
+      });
+    }
+
     return this.repository.find({
       relations: { point: true },
       where: {

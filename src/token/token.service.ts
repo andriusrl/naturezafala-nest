@@ -57,8 +57,6 @@ export class TokenService {
   }
 
   async findOne(token) {
-    console.log('token -----------------------!');
-    console.log(token);
     return await this.tokenRepository.findOne({
       relations: { user: true },
       where: {
