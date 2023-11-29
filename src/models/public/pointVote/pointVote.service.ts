@@ -48,7 +48,6 @@ export class PointVoteService {
       },
       where: {
         point: Equal(id),
-        vote: Equal(false),
         user: Equal(objToken.user.id),
       },
     });
