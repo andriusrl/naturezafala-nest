@@ -47,10 +47,7 @@ export class PointController {
     @Query() query: PaginatedDto,
     @Ip() ip,
   ): Promise<Pagination<Point>> {
-    const response = await this.service.findMyPoints(
-      query,
-      authorization,
-    );
+    const response = await this.service.findMyPoints(query, authorization);
 
     await this.accessService.create(
       AccessHelper.ACTION.VIEWED,

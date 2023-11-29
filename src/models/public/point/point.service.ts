@@ -92,7 +92,6 @@ export class PointService {
         take: options.limit,
         skip: skip,
         where: {
-          status: Equal(true),
           user: Equal(objToken.user.id),
         },
       });
