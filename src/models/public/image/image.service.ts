@@ -21,11 +21,12 @@ export class ImageService {
     private readonly uploadService: UploadService,
     @Inject(TokenService)
     private readonly tokenService: TokenService,
-  ) {}
+  ) { }
 
   async findAll(
     options: { page?: number; limit?: number } = { page: 1, limit: 12 },
     authorization: string,
+    status?: boolean,
   ): Promise<Pagination<Image>> {
     const objToken = await this.tokenService.findOne(authorization);
 
@@ -34,6 +35,42 @@ export class ImageService {
     }
 
     const skip = (options.page - 1) * options.limit;
+
+    if (status !== undefined) {
+
+      console.log('ATIVO')
+      console.log(status)
+      const [response, total] = await this.repository.findAndCount({
+        relations: { point: { pollutionType: true } },
+        select: {
+          id: true,
+          url: true,
+          status: true,
+          point: {
+            name: true,
+            pollutionType: {
+              name: true,
+            },
+          },
+        },
+        where: { status: Equal(status) },
+        take: options.limit,
+        skip: skip,
+      });
+
+      const totalPages = Math.ceil(total / options.limit);
+
+      return {
+        items: response,
+        meta: {
+          totalItems: total,
+          totalPages: totalPages,
+          itemsPerPage: Number(options.limit),
+          currentPage: Number(options.page),
+          itemCount: response.length,
+        },
+      };
+    }
     const [response, total] = await this.repository.findAndCount({
       relations: { point: { pollutionType: true } },
       select: {
