@@ -5,14 +5,14 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/createUser.dto';
 import { TokenService } from 'src/token/token.service';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { Pagination } from 'nestjs-typeorm-paginate';
+import { Pagination, paginateRaw } from 'nestjs-typeorm-paginate';
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly repository: Repository<User>,
     @Inject(TokenService)
-    private readonly TokenService: TokenService,
+    private readonly tokenService: TokenService,
   ) {}
 
   async findAll(
@@ -20,7 +20,7 @@ export class UserService {
     authorization: string,
   ): Promise<Pagination<User>> {
     try {
-      const objToken = await this.TokenService.findOne(authorization);
+      const objToken = await this.tokenService.findOne(authorization);
 
       if (objToken.user.type !== 1) {
         throw new NotFoundException(`Not authorized`);
@@ -48,6 +48,31 @@ export class UserService {
     }
   }
 
+  async findMostVoted(
+    authorization: string,
+    options: { page?: number; limit?: number } = { page: 1, limit: 12 },
+  ) {
+    // ): Promise<Pagination<User>> {
+    const objToken = await this.tokenService.findOne(authorization);
+
+    if (objToken.user.type !== 1) {
+      throw new NotFoundException(`Not authorized`);
+    }
+
+    const queryBuilder = await this.repository
+      .createQueryBuilder('user')
+      .select(['user.name as name'])
+      .addSelect('COUNT(pointVote.id)', 'count')
+      .leftJoin('user.pointVote', 'pointVote')
+      .groupBy('user.id')
+      .orderBy('count', 'DESC');
+
+    return paginateRaw(queryBuilder, {
+      limit: options.limit,
+      page: options.page,
+    });
+  }
+
   async findOne(user: User): Promise<User> {
     if (user?.id) {
       const response = this.repository.findOne({
@@ -73,7 +98,7 @@ export class UserService {
     authorization: string,
   ): Promise<Pagination<User>> {
     try {
-      const objToken = await this.TokenService.findOne(authorization);
+      const objToken = await this.tokenService.findOne(authorization);
 
       if (objToken.user.type !== 1) {
         throw new NotFoundException(`Not authorized`);
@@ -137,7 +162,7 @@ export class UserService {
   }
 
   async update(updateUserDto: UpdateUserDto, authorization: string) {
-    const objToken = this.TokenService.findOne(authorization);
+    const objToken = this.tokenService.findOne(authorization);
 
     const user = this.repository.findOne({ where: { id: updateUserDto.id } });
 

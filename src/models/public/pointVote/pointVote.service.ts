@@ -34,10 +34,13 @@ export class PointVoteService {
         'user.name as name',
         'user.birthDate as birthDate',
         'user.id as id',
+        'pointvote.point as point',
       ])
-      .addSelect('COUNT(pointvote.user)', 'count')
+      .addSelect('COUNT(user.id)', 'count')
       .leftJoin('pointvote.user', 'user')
-      .groupBy('pointvote.user, user.name, user.birth_date, user.id')
+      .groupBy(
+        'pointvote.user, user.name, user.birth_date, user.id, pointvote.point',
+      )
       .orderBy('count', 'DESC');
 
     return paginateRaw(queryBuilder, {
