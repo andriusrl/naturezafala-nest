@@ -34,6 +34,13 @@ export class PointVoteController {
     return this.service.findAll();
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/mostvoted')
+  async findMostVoted(@Headers('authorization') authorization: string) {
+    // ): Promise<PointVote[]> {
+    return this.service.findMostVoted(authorization);
+  }
+
   @Get('/point/:id')
   async findCommentsByPoint(
     @Param('id') id: string,

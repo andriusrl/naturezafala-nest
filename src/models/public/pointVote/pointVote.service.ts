@@ -17,6 +17,20 @@ export class PointVoteService {
     return this.repository.find();
   }
 
+  async findMostVoted(authorization: string) {
+    const objToken = await this.tokenService.findOne(authorization);
+
+    const mostVotedUsers = await this.repository
+      .createQueryBuilder('pointvote')
+      .select('pointvote.user', 'userId')
+      .addSelect('COUNT(pointvote.user)', 'count')
+      .groupBy('pointvote.user')
+      .orderBy('count', 'DESC')
+      .getRawMany();
+
+    return mostVotedUsers;
+  }
+
   async findAllByPoint(id: number, authorization: string) {
     const responseTrue = this.repository.findAndCount({
       select: {
