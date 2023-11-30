@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Equal, Repository } from 'typeorm';
 import { TokenService } from 'src/token/token.service';
 import { PointVote } from './entities/pointVote.entity';
+import { Pagination, paginateRaw } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class PointVoteService {
@@ -17,18 +18,27 @@ export class PointVoteService {
     return this.repository.find();
   }
 
-  async findMostVoted(authorization: string) {
+  async findMostVoted(
+    authorization: string,
+    options: { page?: number; limit?: number } = { page: 1, limit: 12 },
+  ): Promise<Pagination<PointVote>> {
     const objToken = await this.tokenService.findOne(authorization);
 
-    const mostVotedUsers = await this.repository
+    if (objToken.user.type !== 1) {
+      throw new NotFoundException(`Not authorized`);
+    }
+
+    const queryBuilder = await this.repository
       .createQueryBuilder('pointvote')
       .select('pointvote.user', 'userId')
       .addSelect('COUNT(pointvote.user)', 'count')
       .groupBy('pointvote.user')
-      .orderBy('count', 'DESC')
-      .getRawMany();
+      .orderBy('count', 'DESC');
 
-    return mostVotedUsers;
+    return paginateRaw(queryBuilder, {
+      limit: options.limit,
+      page: options.page,
+    });
   }
 
   async findAllByPoint(id: number, authorization: string) {

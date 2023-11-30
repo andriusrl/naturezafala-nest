@@ -31,7 +31,7 @@ export class ImageController {
     @Inject(ImageService)
     private readonly service: ImageService,
     private readonly accessService: AccessService,
-  ) { }
+  ) {}
 
   @UseGuards(AuthGuard('jwt'))
   @Get('/')
@@ -40,10 +40,14 @@ export class ImageController {
     @Query() query: PaginatedDto,
     @Query() status: { status: string },
   ): Promise<Pagination<Image>> {
-
-    console.log('status')
-    console.log(status.status)
-    if (status.status) return this.service.findAll(query, authorization, status.status === 'ativo' ? true : false);
+    console.log('status');
+    console.log(status.status);
+    if (status.status)
+      return this.service.findAll(
+        query,
+        authorization,
+        status.status === 'ativo' ? true : false,
+      );
     return this.service.findAll(query, authorization);
   }
 

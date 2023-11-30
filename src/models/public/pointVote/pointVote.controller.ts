@@ -12,6 +12,7 @@ import {
   UseGuards,
   UseInterceptors,
   Ip,
+  Query,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { PointVote } from './entities/pointVote.entity';
@@ -19,6 +20,8 @@ import { PointVoteService } from './pointVote.service';
 import { CreatePointVoteDto } from './dto/createPointVote.dto';
 import { AccessService } from 'src/access/access.service';
 import { AccessHelper } from 'src/helpers/access.helper';
+import { PaginatedDto } from 'src/common/dto/pagination.dto';
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 @Controller('pointvote')
 export class PointVoteController {
@@ -36,9 +39,11 @@ export class PointVoteController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('/mostvoted')
-  async findMostVoted(@Headers('authorization') authorization: string) {
-    // ): Promise<PointVote[]> {
-    return this.service.findMostVoted(authorization);
+  async findMostVoted(
+    @Headers('authorization') authorization: string,
+    @Query() query: PaginatedDto,
+  ): Promise<Pagination<PointVote>> {
+    return this.service.findMostVoted(authorization, query);
   }
 
   @Get('/point/:id')

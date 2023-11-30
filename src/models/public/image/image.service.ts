@@ -21,7 +21,7 @@ export class ImageService {
     private readonly uploadService: UploadService,
     @Inject(TokenService)
     private readonly tokenService: TokenService,
-  ) { }
+  ) {}
 
   async findAll(
     options: { page?: number; limit?: number } = { page: 1, limit: 12 },
@@ -37,9 +37,8 @@ export class ImageService {
     const skip = (options.page - 1) * options.limit;
 
     if (status !== undefined) {
-
-      console.log('ATIVO')
-      console.log(status)
+      console.log('ATIVO');
+      console.log(status);
       const [response, total] = await this.repository.findAndCount({
         relations: { point: { pollutionType: true } },
         select: {
