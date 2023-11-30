@@ -59,15 +59,10 @@ export class AccessController {
     @Headers('authorization') authorization: string,
     @Query() query: PaginatedDto,
     @Ip() ip,
-  ) {
-    // ): Promise<Pagination<Access>> {
+  ): Promise<Pagination<Access>> {
     const objToken = await this.TokenService.findOne(authorization);
 
-    if (objToken.user.type !== 1) {
-      throw new NotFoundException(`Not authorized`);
-    }
-
-    const response = this.service.findAll(query, authorization);
+    const response = this.service.findMyAccess(query, authorization);
 
     await this.accessService.create(
       AccessHelper.ACTION.VIEWED,

@@ -116,18 +116,24 @@ export class UserService {
   }
 
   async create(userBody: CreateUserDto): Promise<User> {
-    const user = new User();
+    try {
+      const user = new User();
 
-    user.name = userBody.name;
-    user.birthDate = userBody.birthDate;
-    user.fone = userBody.fone;
-    user.cpf = userBody.cpf;
-    user.email = userBody.email;
-    user.password = userBody.password;
-    user.status = true;
-    user.type = 3;
+      user.name = userBody.name;
+      user.birthDate = userBody.birthDate;
+      user.fone = userBody.fone;
+      user.cpf = userBody.cpf;
+      user.email = userBody.email;
+      user.password = userBody.password;
+      user.status = true;
+      user.type = 3;
 
-    return this.repository.save(user);
+      const response = await this.repository.save(user);
+
+      return response;
+    } catch (err) {
+      throw new NotFoundException(err?.constraint);
+    }
   }
 
   async update(updateUserDto: UpdateUserDto, authorization: string) {

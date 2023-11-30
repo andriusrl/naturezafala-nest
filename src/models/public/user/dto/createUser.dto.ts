@@ -1,4 +1,4 @@
-import { IsBoolean, IsDateString, IsString, MaxLength } from 'class-validator';
+import { IsDateString, IsEmail, IsString, MaxLength } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -12,14 +12,11 @@ export class CreateUserDto {
   @MaxLength(25)
   fone: string;
 
-  @IsBoolean()
-  status: boolean;
-
   @IsString()
   @MaxLength(11)
   cpf: string;
 
-  @IsString()
+  @IsEmail()
   @MaxLength(255)
   email: string;
 

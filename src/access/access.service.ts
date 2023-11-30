@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Equal, Repository } from 'typeorm';
 import { TokenService } from '../token/token.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import AccessEntity from './entities/access.entity';
@@ -85,15 +85,19 @@ export class AccessService {
     try {
       const objToken = await this.tokenService.findOne(authorization);
 
-      if (objToken.user.type !== 1) {
-        throw new NotFoundException(`Not authorized`);
-      }
       const skip = (options.page - 1) * options.limit;
       const [response, total] = await this.repository.findAndCount({
         take: options.limit,
         skip: skip,
+        select: {
+          id: true,
+          action: true,
+          description: true,
+          ip: true,
+          date: true,
+        },
         where: {
-          user_id: objToken.user.id,
+          user_id: Equal(objToken.user.id),
         },
         order: {
           id: 'DESC',

@@ -110,11 +110,7 @@ export class UserController {
   }
 
   @Post('')
-  async create(
-    @Headers('authorization') authorization: string,
-    @Ip() ip,
-    @Body() user: CreateUserDto,
-  ) {
+  async create(@Ip() ip, @Body() user: CreateUserDto) {
     const response = await this.service.create(user);
 
     await this.accessService.create(
