@@ -30,9 +30,14 @@ export class PointVoteService {
 
     const queryBuilder = await this.repository
       .createQueryBuilder('pointvote')
-      .select('pointvote.user', 'userId')
+      .select([
+        'user.name as name',
+        'user.birthDate as birthDate',
+        'user.id as id',
+      ])
       .addSelect('COUNT(pointvote.user)', 'count')
-      .groupBy('pointvote.user')
+      .leftJoin('pointvote.user', 'user')
+      .groupBy('pointvote.user, user.name, user.birth_date, user.id')
       .orderBy('count', 'DESC');
 
     return paginateRaw(queryBuilder, {
