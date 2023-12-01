@@ -202,6 +202,7 @@ export class ImageService {
           'i.id as id',
           'i.url as url',
           'i.point as point',
+          'i.status as status',
           'point.name as pointName',
           'pollutionType.name as pollutionTypeName',
         ])
