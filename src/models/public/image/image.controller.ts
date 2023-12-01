@@ -40,8 +40,6 @@ export class ImageController {
     @Query() query: PaginatedDto,
     @Query() status: { status: string },
   ): Promise<Pagination<Image>> {
-    console.log('status');
-    console.log(status.status);
     if (status.status)
       return this.service.findAll(
         query,
