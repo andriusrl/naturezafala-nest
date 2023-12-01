@@ -14,7 +14,7 @@ export class PointService {
     private readonly repository: Repository<Point>,
     @Inject(TokenService)
     private readonly tokenService: TokenService,
-  ) { }
+  ) {}
 
   async findAll(
     options: { page?: number; limit?: number } = { page: 1, limit: 12 },
@@ -199,22 +199,28 @@ export class PointService {
     }
   }
 
-  async searchCity(
-    search: string,
-  ) {
+  async searchCity(search: string) {
     try {
-      const response = await fetch(`http://api.geonames.org/searchJSON?name=${encodeURIComponent(search)}&username=andriusrl`);
+      const response = await fetch(
+        `http://api.geonames.org/searchJSON?name=${encodeURIComponent(
+          search,
+        )}&username=andriusrl`,
+      );
       const data = await response.json();
+
+      console.log('data');
+      console.log(data?.geonames.filter((city) => city.fcode === 'PPL'));
       return data?.geonames
+        .filter((city) => city.fcode === 'PPL')
         .slice(0, 3)
-        .map(city => {
+        .map((city) => {
           return {
             name: city.name,
             lat: city.lat,
             lng: city.lng,
-            state: city?.adminCodes1?.ISO3166_2
-          }
-        })
+            state: city?.adminCodes1?.ISO3166_2,
+          };
+        });
     } catch (err) {
       console.log(err);
     }
