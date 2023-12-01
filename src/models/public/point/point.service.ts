@@ -208,9 +208,11 @@ export class PointService {
       );
       const data = await response.json();
 
+      console.log(data?.geonames.slice(0, 15));
+
       return data?.geonames
-        .filter((city) => city.fcode === 'PPL')
-        .slice(0, 3)
+        .filter((city) => city.fcode === 'PPL' || city.fcode === 'PPLA')
+        .slice(0, 5)
         .map((city) => {
           return {
             name: city.name,
