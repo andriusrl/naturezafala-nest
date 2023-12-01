@@ -204,7 +204,7 @@ export class PointService {
       const response = await fetch(
         `http://api.geonames.org/searchJSON?name=${encodeURIComponent(
           search,
-        )}&username=andriusrl`,
+        )}&username=andriusrl&country=BR`,
       );
       const data = await response.json();
 
