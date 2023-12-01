@@ -28,7 +28,7 @@ export class PointController {
     @Inject(PointService)
     private readonly service: PointService,
     private readonly accessService: AccessService,
-  ) {}
+  ) { }
 
   @UseGuards(AuthGuard('jwt'))
   @Get('/')
@@ -58,6 +58,8 @@ export class PointController {
 
     return response;
   }
+
+
 
   @Get('/km/:lat/:long/:km')
   async findAllKm(
@@ -123,6 +125,17 @@ export class PointController {
       'user',
       authorization,
       ip,
+    );
+
+    return response;
+  }
+
+  @Post('/city/search')
+  async citySearch(
+    @Body() search: { text: string },
+  ) {
+    const response = await this.service.searchCity(
+      search.text,
     );
 
     return response;

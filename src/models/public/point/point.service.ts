@@ -199,6 +199,27 @@ export class PointService {
     }
   }
 
+  async searchCity(
+    search: string,
+  ) {
+    try {
+      const response = await fetch(`http://api.geonames.org/searchJSON?name=${encodeURIComponent(search)}&username=andriusrl`);
+      const data = await response.json();
+      return data?.geonames
+        .slice(0, 3)
+        .map(city => {
+          return {
+            name: city.name,
+            lat: city.lat,
+            lng: city.lng,
+            state: city?.adminCodes1?.ISO3166_2
+          }
+        })
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   async createPoint(
     point: CreatePointDto,
     authorization: string,
