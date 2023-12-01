@@ -14,7 +14,7 @@ export class PointService {
     private readonly repository: Repository<Point>,
     @Inject(TokenService)
     private readonly tokenService: TokenService,
-  ) {}
+  ) { }
 
   async findAll(
     options: { page?: number; limit?: number } = { page: 1, limit: 12 },
@@ -146,11 +146,31 @@ export class PointService {
     authorization: string,
   ): Promise<Pagination<Point>> {
     try {
-      // const objToken = await this.tokenService.findOne(authorization);
+      const objToken = await this.tokenService.findOne(authorization);
 
-      // if (objToken.user.type !== 1) {
-      //   throw new NotFoundException(`Not authorized`);
-      // }
+      if (objToken?.user?.type === 1) {
+        const skip = (options.page - 1) * options.limit;
+        const [response, total] = await this.repository.findAndCount({
+          take: options.limit,
+          skip: skip,
+          where: {
+            name: ILike(`%${search}%`),
+          },
+        });
+
+        const totalPages = Math.ceil(total / options.limit);
+
+        return {
+          items: response,
+          meta: {
+            totalItems: total,
+            totalPages: totalPages,
+            itemsPerPage: Number(options.limit),
+            currentPage: Number(options.page),
+            itemCount: response.length,
+          },
+        };
+      }
 
       const skip = (options.page - 1) * options.limit;
       const [response, total] = await this.repository.findAndCount({
