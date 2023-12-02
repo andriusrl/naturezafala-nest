@@ -66,9 +66,8 @@ export class PointService {
   async findOne(id, authorization?): Promise<Point> {
     console.log('como chegar authorization', authorization);
 
-    if (authorization) {
+    if (authorization && authorization.length > 10) {
       const objToken = await this.tokenService.findOne(authorization);
-      console.log('entrou aq');
 
       const responseOwnsPoint = await this.repository.findOne({
         select: {
