@@ -6,6 +6,7 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Point } from '../../point/entities/point.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Entity('comment', { schema: 'public' })
 export class Comment {
@@ -19,10 +20,12 @@ export class Comment {
     @ManyToOne(type => Point, point => point.comment)
     @JoinColumn({ name: 'point' })
     point: Point;
-
+    
     @Column({ type: 'timestamp' })
     date: Date;
-
+    
     @Column({ type: 'int4' })
-    user: number;
+    @ManyToOne(type => User, user => user.comment)
+    @JoinColumn({ name: 'user' })
+    user: User;
 }

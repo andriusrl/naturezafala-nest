@@ -1,4 +1,5 @@
 import { TokenEntity } from 'src/token/token.entity';
+import { Comment } from 'src/models/public/comment/entities/comment.entity';
 import {
   Column,
   Entity,
@@ -42,4 +43,7 @@ export class User {
 
   @OneToOne(() => TokenEntity, (tokenEntity) => tokenEntity.user)
   tokenEntity: TokenEntity;
+
+  @OneToOne(() => Comment, (comment) => comment.user)
+  comment: Comment;
 }

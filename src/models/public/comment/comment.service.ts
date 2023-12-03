@@ -6,6 +6,7 @@ import { CreateCommentDto } from './dto/createComment.dto';
 import { UpdateCommentDto } from './dto/updateComment.dto';
 import { Comment } from './entities/comment.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class CommentService {
@@ -28,10 +29,10 @@ export class CommentService {
         id: true,
         comment: true,
         date: true,
-        user: true,
+        user: { name: true },
         point: { name: true },
       },
-      relations: { point: true },
+      relations: { point: true, user: true },
       where: {
         point: Equal(id),
       },
@@ -61,13 +62,14 @@ export class CommentService {
 
     const newComment = new Comment();
 
+    const userObj = new User();
+
+    userObj.id = objToken.user.id;
+
     newComment.comment = comment.comment;
     newComment.date = new Date();
-    newComment.user = objToken.user.id;
+    newComment.user = userObj;
     newComment.point = comment.point;
-
-    console.log('newComment');
-    console.log(newComment);
 
     return this.repository.save(newComment);
   }
@@ -81,7 +83,10 @@ export class CommentService {
 
     const objPromise = await Promise.all([objToken, comment]);
 
-    if (objPromise[0].user.id !== objPromise[1].user) {
+    const commentUser = new User();
+    commentUser.id = objPromise[1].user.id;
+
+    if (objPromise[0].user.id !== commentUser.id) {
       if (objPromise[0].user.type !== 1) {
         throw new NotFoundException(`Not authorized`);
       }
@@ -105,7 +110,10 @@ export class CommentService {
 
     const objPromise = await Promise.all([objToken, comment]);
 
-    if (objPromise[0].user.id !== objPromise[1].user) {
+    const commentUser = new User();
+    commentUser.id = objPromise[1].user.id;
+
+    if (objPromise[0].user.id !== commentUser.id) {
       throw new NotFoundException(`Not authorized`);
     }
 
