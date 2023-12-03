@@ -14,7 +14,7 @@ export class CommentService {
     private readonly repository: Repository<Comment>,
     @Inject(TokenService)
     private readonly TokenService: TokenService,
-  ) {}
+  ) { }
 
   async findAll(): Promise<Comment[]> {
     return this.repository.find();
@@ -65,6 +65,9 @@ export class CommentService {
     newComment.date = new Date();
     newComment.user = objToken.user.id;
     newComment.point = comment.point;
+
+    console.log('newComment');
+    console.log(newComment);
 
     return this.repository.save(newComment);
   }

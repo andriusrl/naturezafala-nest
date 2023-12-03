@@ -14,7 +14,7 @@ export class PointService {
     private readonly repository: Repository<Point>,
     @Inject(TokenService)
     private readonly tokenService: TokenService,
-  ) {}
+  ) { }
 
   async findAll(
     options: { page?: number; limit?: number } = { page: 1, limit: 12 },
@@ -64,10 +64,26 @@ export class PointService {
   }
 
   async findOne(id, authorization?): Promise<Point> {
-    console.log('como chegar authorization', authorization);
 
     if (authorization && authorization.length > 10) {
       const objToken = await this.tokenService.findOne(authorization);
+
+      if (objToken === null) {
+        return this.repository.findOne({
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            date: true,
+            latitude: true,
+            longitude: true,
+            status: true,
+            pollutionType: { id: true, name: true },
+          },
+          relations: { pollutionType: true },
+          where: { id },
+        });
+      }
 
       const responseOwnsPoint = await this.repository.findOne({
         select: {
@@ -84,7 +100,7 @@ export class PointService {
         relations: { pollutionType: true },
         where: { id, user: Equal(objToken?.user?.id) },
       });
-      console.log('responseOwnsPoint', responseOwnsPoint);
+      
       if (responseOwnsPoint?.user === objToken?.user?.id) {
         return responseOwnsPoint;
       }
@@ -245,40 +261,47 @@ export class PointService {
   }
 
   async update(updatePointDto: UpdatePointDto, authorization: string) {
-    const objToken = this.tokenService.findOne(authorization);
+    try {
+      const objToken = this.tokenService.findOne(authorization);
 
-    const point = this.repository.findOne({ where: { id: updatePointDto.id } });
+      const point = this.repository.findOne({ where: { id: updatePointDto.id } });
 
-    const objPromise = await Promise.all([objToken, point]);
+      const objPromise = await Promise.all([objToken, point]);
 
-    if (objPromise[0].user.id !== objPromise[1].user) {
-      if (objPromise[0].user.type !== 1) {
-        throw new NotFoundException(`Not authorized`);
+      if (!point) {
+        throw new NotFoundException(`Point ID ${updatePointDto.id} not found`);
       }
+
+      if (objPromise[0]?.user?.type === 1) {
+        await this.repository.update(
+          { id: updatePointDto.id },
+          { ...updatePointDto, status: updatePointDto.status },
+        );
+
+        return { ...updatePointDto, status: updatePointDto.status };
+      }
+
+      console.log('objPromise[0].user.id === objPromise[1].user')
+      console.log(objPromise[0]?.user?.id, objPromise[1]?.user)
+
+      if (objPromise[0]?.user?.id === objPromise[1]?.user) {
+
+        console.log('testando usuario update point')
+        await this.repository.update(
+          { id: updatePointDto.id },
+          { name: updatePointDto.name, description: updatePointDto.description },
+        );
+
+        return {
+          id: updatePointDto.id,
+          ...{ name: updatePointDto.name, description: updatePointDto.description },
+        };
+      }
+    } catch (err) {
+      console.log(err)
+      throw new NotFoundException(`Not authorized`);
     }
 
-    if (!point) {
-      throw new NotFoundException(`Point ID ${updatePointDto.id} not found`);
-    }
-
-    if (objPromise[0].user.type === 1) {
-      await this.repository.update(
-        { id: updatePointDto.id },
-        { ...updatePointDto, status: updatePointDto.status },
-      );
-
-      return { ...updatePointDto, status: updatePointDto.status };
-    }
-
-    await this.repository.update(
-      { id: updatePointDto.id },
-      { name: updatePointDto.name, description: updatePointDto.description },
-    );
-
-    return {
-      id: updatePointDto.id,
-      ...{ name: updatePointDto.name, description: updatePointDto.description },
-    };
   }
 
   async delete(id: number, authorization: string) {

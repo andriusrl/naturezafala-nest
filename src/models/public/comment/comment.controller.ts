@@ -28,7 +28,7 @@ export class CommentController {
     @Inject(CommentService)
     private readonly service: CommentService,
     private readonly accessService: AccessService,
-  ) {}
+  ) { }
 
   @UseGuards(AuthGuard('jwt'))
   @Get('/')
@@ -49,8 +49,12 @@ export class CommentController {
   async create(
     @Headers('authorization') authorization: string,
     @Ip() ip,
-    @Body() comment: CreateCommentDto,
+    @Body() comment,
+    // @Body() comment: CreateCommentDto,
   ) {
+
+    console.log('body comment')
+    console.log(comment)
     const response = await this.service.create(comment, authorization);
 
     await this.accessService.create(
