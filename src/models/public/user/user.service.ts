@@ -48,31 +48,6 @@ export class UserService {
     }
   }
 
-  async findMostVoted(
-    authorization: string,
-    options: { page?: number; limit?: number } = { page: 1, limit: 12 },
-  ) {
-    // ): Promise<Pagination<User>> {
-    const objToken = await this.tokenService.findOne(authorization);
-
-    if (objToken.user.type !== 1) {
-      throw new NotFoundException(`Not authorized`);
-    }
-
-    const queryBuilder = await this.repository
-      .createQueryBuilder('user')
-      .select(['user.name as name'])
-      .addSelect('COUNT(pointVote.id)', 'count')
-      .leftJoin('user.pointVote', 'pointVote')
-      .groupBy('user.id')
-      .orderBy('count', 'DESC');
-
-    return paginateRaw(queryBuilder, {
-      limit: options.limit,
-      page: options.page,
-    });
-  }
-
   async findOne(user: User): Promise<User> {
     if (user?.id) {
       const response = this.repository.findOne({

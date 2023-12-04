@@ -9,6 +9,7 @@ import {
 import { Image } from '../../image/entities/image.entity';
 import { Comment } from '../../comment/entities/comment.entity';
 import { PollutionType } from '../../pollutionType/entities/pollutionType.entity';
+import { PointVote } from '../../pointVote/entities/pointVote.entity';
 
 @Entity('point', { schema: 'public' })
 export class Point {
@@ -44,4 +45,6 @@ export class Point {
   @OneToMany((type) => Image, (image) => image.point) image: Image[];
 
   @OneToMany((type) => Image, (image) => image.point) comment: Comment[];
+
+  @OneToMany((type) => PointVote, (pointVote) => pointVote.point) pointVote: PointVote[];
 }

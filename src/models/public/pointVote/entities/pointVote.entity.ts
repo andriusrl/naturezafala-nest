@@ -5,6 +5,8 @@ import { User } from '../../user/entities/user.entity';
 @Entity('point_vote', { schema: 'public' })
 export class PointVote {
   @PrimaryColumn({ type: 'int4' })
+  @ManyToOne((type) => Point, (point) => point.pointVote)
+  @JoinColumn({ name: 'point' })
   point: Point;
 
   @Column({ type: 'int4' })
@@ -14,9 +16,4 @@ export class PointVote {
 
   @Column({ type: 'bool' })
   vote: boolean;
-
-  // @Column({ type: 'int4' })
-  // @ManyToOne(type => Point, point => point.image)
-  // @JoinColumn({ name: 'point' })
-  // point: Point;
 }

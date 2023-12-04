@@ -97,7 +97,7 @@ export class PointController {
 
     await this.accessService.create(
       AccessHelper.ACTION.ADDED,
-      'point',
+      'ponto',
       authorization,
       ip,
     );
@@ -146,7 +146,7 @@ export class PointController {
 
     await this.accessService.create(
       AccessHelper.ACTION.UPDATE,
-      'point',
+      'ponto',
       authorization,
       ip,
     );
@@ -165,7 +165,7 @@ export class PointController {
 
     await this.accessService.create(
       AccessHelper.ACTION.DELETE,
-      'point',
+      'ponto',
       authorization,
       ip,
     );

@@ -31,17 +31,21 @@ export class PointVoteService {
     const queryBuilder = await this.repository
       .createQueryBuilder('pointvote')
       .select([
-        'user.name as name',
-        'user.birthDate as birthDate',
-        'user.id as id',
-        'pointvote.point as point',
+        'point.id as id',
+        'point.name as name',
+        'point.description as description',
+        'point.date as date',
+        'point.user as user',
+        'point.latitude as latitude',
+        'point.longitude as longitude',
+        'point.status as status',
+        'point.pollutionType as pollutionType',
+        'COUNT(point.user) as count',
       ])
-      .addSelect('COUNT(user.id)', 'count')
       .leftJoin('pointvote.user', 'user')
-      .groupBy(
-        'pointvote.user, user.name, user.birth_date, user.id, pointvote.point',
-      )
-      .orderBy('count', 'DESC');
+      .leftJoin('pointvote.point', 'point')
+      .groupBy('point.user, pointvote.point, point.id') // Agrupe por usuário e ponto
+      .orderBy({ count: 'DESC' });
 
     return paginateRaw(queryBuilder, {
       limit: options.limit,

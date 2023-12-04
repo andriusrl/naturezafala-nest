@@ -66,15 +66,15 @@ export class UserController {
     return response;
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Get('/mostvoted')
-  async findMostVoted(
-    @Headers('authorization') authorization: string,
-    @Query() query: PaginatedDto,
-  ) {
-    // ): Promise<Pagination<PointVote>> {
-    return this.service.findMostVoted(authorization, query);
-  }
+  // @UseGuards(AuthGuard('jwt'))
+  // @Get('/mostvoted')
+  // async findMostVoted(
+  //   @Headers('authorization') authorization: string,
+  //   @Query() query: PaginatedDto,
+  // ) {
+  //   // ): Promise<Pagination<PointVote>> {
+  //   return this.service.findMostVoted(authorization, query);
+  // }
 
   @Post('/search')
   async search(
