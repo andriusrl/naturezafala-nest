@@ -116,6 +116,9 @@ export class ImageService {
     }
 
     return this.repository.find({
+      select: {
+        id: true, url: true, status: true, point: { id: true, name: true, description: true, date: true, latitude: true, longitude: true, status: true, pollutionType: { id: true } }
+      },
       relations: { point: true },
       where: {
         point: Equal(id),
@@ -262,7 +265,7 @@ export class ImageService {
 
     const objToken = this.tokenService.findOne(authorization);
 
-    const point = this.pointService.findOne(4, authorization);
+    const point = this.pointService.findOne(image.point, authorization);
 
     const objPromise = await Promise.all([objToken, point]);
 

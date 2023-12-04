@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { PointVote } from '../../pointVote/entities/pointVote.entity';
+import { Point } from '../../point/entities/point.entity';
 
 @Entity('user', { schema: 'public' })
 export class User {
@@ -40,6 +41,9 @@ export class User {
 
   @OneToMany((type) => PointVote, (pointVote) => pointVote.user)
   pointVote: PointVote[];
+
+  @OneToMany((type) => Point, (point) => point.user)
+  point: Point[];
 
   @OneToOne(() => TokenEntity, (tokenEntity) => tokenEntity.user)
   tokenEntity: TokenEntity;

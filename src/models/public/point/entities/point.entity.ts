@@ -10,6 +10,7 @@ import { Image } from '../../image/entities/image.entity';
 import { Comment } from '../../comment/entities/comment.entity';
 import { PollutionType } from '../../pollutionType/entities/pollutionType.entity';
 import { PointVote } from '../../pointVote/entities/pointVote.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Entity('point', { schema: 'public' })
 export class Point {
@@ -26,6 +27,8 @@ export class Point {
   date: Date;
 
   @Column({ type: 'int4' })
+  @ManyToOne((type) => User, (user) => user.point)
+  @JoinColumn({ name: 'user' })
   user: number;
 
   @Column({ type: 'int4' })
