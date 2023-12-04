@@ -21,7 +21,7 @@ export class ImageService {
     private readonly uploadService: UploadService,
     @Inject(TokenService)
     private readonly tokenService: TokenService,
-  ) {}
+  ) { }
 
   async findAll(
     options: { page?: number; limit?: number } = { page: 1, limit: 12 },
@@ -255,9 +255,14 @@ export class ImageService {
   }
 
   async delete(id: number, authorization: string): Promise<Image> {
+    const image = await this.repository.findOne({ where: { id } });
+    if (!image) {
+      throw new NotFoundException(`Image ID ${id} not found`);
+    }
+
     const objToken = this.tokenService.findOne(authorization);
 
-    const point = this.pointService.findOne(id);
+    const point = this.pointService.findOne(4, authorization);
 
     const objPromise = await Promise.all([objToken, point]);
 
@@ -266,11 +271,8 @@ export class ImageService {
         throw new NotFoundException(`Not authorized`);
       }
     }
-    const image = await this.repository.findOne({ where: { id } });
 
-    if (!image) {
-      throw new NotFoundException(`Image ID ${id} not found`);
-    }
+    await this.uploadService.delete(image.url)
 
     return this.repository.remove(image);
   }
