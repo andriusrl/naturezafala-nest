@@ -21,7 +21,7 @@ export class ImageService {
     private readonly uploadService: UploadService,
     @Inject(TokenService)
     private readonly tokenService: TokenService,
-  ) { }
+  ) {}
 
   async findAll(
     options: { page?: number; limit?: number } = { page: 1, limit: 12 },
@@ -30,7 +30,7 @@ export class ImageService {
   ): Promise<Pagination<Image>> {
     const objToken = await this.tokenService.findOne(authorization);
 
-    if (objToken.user.type !== 1) {
+    if (objToken.user.type >= 3) {
       throw new NotFoundException(`Not authorized`);
     }
 
@@ -117,7 +117,19 @@ export class ImageService {
 
     return this.repository.find({
       select: {
-        id: true, url: true, status: true, point: { id: true, name: true, description: true, date: true, latitude: true, longitude: true, status: true, pollutionType: { id: true } }
+        id: true,
+        url: true,
+        status: true,
+        point: {
+          id: true,
+          name: true,
+          description: true,
+          date: true,
+          latitude: true,
+          longitude: true,
+          status: true,
+          pollutionType: { id: true },
+        },
       },
       relations: { point: true },
       where: {
@@ -138,7 +150,7 @@ export class ImageService {
   async update(updateImageDto: UpdateImageDto, authorization: string) {
     const objToken = await this.tokenService.findOne(authorization);
 
-    if (objToken.user.type !== 1) {
+    if (objToken.user.type >= 3) {
       throw new NotFoundException(`Not authorized`);
     }
 
@@ -162,7 +174,7 @@ export class ImageService {
     try {
       const objToken = await this.tokenService.findOne(authorization);
 
-      if (objToken.user.type !== 1) {
+      if (objToken.user.type >= 3) {
         throw new NotFoundException(`Not authorized`);
       }
 
@@ -270,12 +282,12 @@ export class ImageService {
     const objPromise = await Promise.all([objToken, point]);
 
     if (objPromise[0]?.user.id !== objPromise[1]?.user) {
-      if (objPromise[0].user.type !== 1) {
+      if (objPromise[0].user.type >= 3) {
         throw new NotFoundException(`Not authorized`);
       }
     }
 
-    await this.uploadService.delete(image.url)
+    await this.uploadService.delete(image.url);
 
     return this.repository.remove(image);
   }
