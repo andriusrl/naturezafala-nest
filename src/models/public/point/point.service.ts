@@ -14,7 +14,7 @@ export class PointService {
     private readonly repository: Repository<Point>,
     @Inject(TokenService)
     private readonly tokenService: TokenService,
-  ) { }
+  ) {}
 
   async findAll(
     options: { page?: number; limit?: number } = { page: 1, limit: 12 },
@@ -22,7 +22,7 @@ export class PointService {
   ): Promise<Pagination<Point>> {
     const objToken = await this.tokenService.findOne(authorization);
 
-    if (objToken?.user?.type !== 1) {
+    if (objToken?.user?.type <= 2) {
       throw new NotFoundException(`Not authorized`);
     }
 
@@ -64,7 +64,6 @@ export class PointService {
   }
 
   async findOne(id, authorization?): Promise<Point> {
-
     if (authorization && authorization.length > 10) {
       const objToken = await this.tokenService.findOne(authorization);
 
@@ -100,7 +99,7 @@ export class PointService {
         relations: { pollutionType: true },
         where: { id, user: Equal(objToken?.user?.id) },
       });
-      
+
       if (responseOwnsPoint?.user === objToken?.user?.id) {
         return responseOwnsPoint;
       }
@@ -163,7 +162,7 @@ export class PointService {
     try {
       const objToken = await this.tokenService.findOne(authorization);
 
-      if (objToken?.user?.type === 1) {
+      if (objToken?.user?.type <= 2) {
         const skip = (options.page - 1) * options.limit;
         const [response, total] = await this.repository.findAndCount({
           take: options.limit,
@@ -264,7 +263,9 @@ export class PointService {
     try {
       const objToken = this.tokenService.findOne(authorization);
 
-      const point = this.repository.findOne({ where: { id: updatePointDto.id } });
+      const point = this.repository.findOne({
+        where: { id: updatePointDto.id },
+      });
 
       const objPromise = await Promise.all([objToken, point]);
 
@@ -272,7 +273,7 @@ export class PointService {
         throw new NotFoundException(`Point ID ${updatePointDto.id} not found`);
       }
 
-      if (objPromise[0]?.user?.type === 1) {
+      if (objPromise[0]?.user?.type <= 2) {
         await this.repository.update(
           { id: updatePointDto.id },
           { ...updatePointDto, status: updatePointDto.status },
@@ -281,27 +282,27 @@ export class PointService {
         return { ...updatePointDto, status: updatePointDto.status };
       }
 
-      console.log('objPromise[0].user.id === objPromise[1].user')
-      console.log(objPromise[0]?.user?.id, objPromise[1]?.user)
-
       if (objPromise[0]?.user?.id === objPromise[1]?.user) {
-
-        console.log('testando usuario update point')
         await this.repository.update(
           { id: updatePointDto.id },
-          { name: updatePointDto.name, description: updatePointDto.description },
+          {
+            name: updatePointDto.name,
+            description: updatePointDto.description,
+          },
         );
 
         return {
           id: updatePointDto.id,
-          ...{ name: updatePointDto.name, description: updatePointDto.description },
+          ...{
+            name: updatePointDto.name,
+            description: updatePointDto.description,
+          },
         };
       }
     } catch (err) {
-      console.log(err)
+      console.log(err);
       throw new NotFoundException(`Not authorized`);
     }
-
   }
 
   async delete(id: number, authorization: string) {
