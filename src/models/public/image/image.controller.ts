@@ -17,7 +17,6 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ImageService } from './image.service';
 import { Image } from './entities/image.entity';
-import { CreateImageDto } from './dto/createImage.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PaginatedDto } from 'src/common/dto/pagination.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
@@ -77,7 +76,7 @@ export class ImageController {
 
     await this.accessService.create(
       AccessHelper.ACTION.VIEWED,
-      'user',
+      `buscou por: ${search?.text}`,
       authorization,
       ip,
     );
@@ -88,12 +87,22 @@ export class ImageController {
   @UseGuards(AuthGuard('jwt'))
   @Post('/:idPoint')
   @UseInterceptors(FileInterceptor('file'))
-  create(
+  async create(
     @Headers('authorization') authorization: string,
+    @Ip() ip,
     @Param('idPoint') idPoint,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.service.create(file, idPoint, authorization);
+    const response = await this.service.create(file, idPoint, authorization);
+
+    await this.accessService.create(
+      AccessHelper.ACTION.ADDED,
+      `imagem ao ponto: ${idPoint}`,
+      authorization,
+      ip,
+    );
+
+    return response;
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -107,7 +116,7 @@ export class ImageController {
 
     await this.accessService.create(
       AccessHelper.ACTION.UPDATE,
-      'point',
+      `Atualizou imagem do ponto: ${point?.id}`,
       authorization,
       ip,
     );
@@ -117,7 +126,20 @@ export class ImageController {
 
   @UseGuards(AuthGuard('jwt'))
   @Delete('/:id')
-  delete(@Headers('authorization') authorization: string, @Param('id') id) {
-    return this.service.delete(+id, authorization);
+  async delete(
+    @Headers('authorization') authorization: string,
+    @Ip() ip,
+    @Param('id') id,
+  ) {
+    const response = await this.service.delete(+id, authorization);
+
+    await this.accessService.create(
+      AccessHelper.ACTION.UPDATE,
+      `Deletou imagem: ${id}`,
+      authorization,
+      ip,
+    );
+
+    return response;
   }
 }
