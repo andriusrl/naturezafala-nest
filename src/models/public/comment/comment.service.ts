@@ -38,6 +38,9 @@ export class CommentService {
       },
       take: options.limit,
       skip: skip,
+      order: {
+        id: 'DESC',
+      },
     });
 
     const totalPages = Math.ceil(total / options.limit);
