@@ -1,16 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { NotFoundException } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: ['http://localhost:5173', '*'],
+    origin: ['*'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    optionsSuccessStatus: 204,
   });
 
-  app.useGlobalFilters()
+  app.useGlobalFilters();
 
   const config = new DocumentBuilder()
     .setTitle('NF')
@@ -21,7 +23,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   await app.listen(3012, () => {
-    console.log('[Server listening] http://localhost:3012',);
+    console.log('[Server listening] http://localhost:3012');
   });
 }
 bootstrap();
