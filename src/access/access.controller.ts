@@ -66,7 +66,7 @@ export class AccessController {
 
     await this.accessService.create(
       AccessHelper.ACTION.VIEWED,
-      'user',
+      'Acessos',
       authorization,
       ip,
     );

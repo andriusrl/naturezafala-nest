@@ -46,6 +46,15 @@ export class PointVoteController {
     return this.service.findMostVoted(authorization, query);
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/findone')
+  async findOne(
+    @Headers('authorization') authorization: string,
+    @Query() query: { point; user },
+  ) {
+    return this.service.findOne(query?.user, query?.point);
+  }
+
   @Get('/point/:id')
   async findCommentsByPoint(
     @Param('id') id: string,

@@ -18,6 +18,12 @@ export class PointVoteService {
     return this.repository.find();
   }
 
+  async findOne(user, point) {
+    return this.repository.findOne({
+      where: { user, point },
+    });
+  }
+
   async findMostVoted(
     authorization: string,
     options: { page?: number; limit?: number } = { page: 1, limit: 12 },
@@ -139,6 +145,15 @@ export class PointVoteService {
       id: idPoint,
       user: objToken.user.id,
     });
+
+    if (objPointVote[0]?.vote === Boolean(voteBody?.vote)) {
+      const objPointVote = await this.findByPoint({
+        id: idPoint,
+        user: objToken.user.id,
+      });
+
+      return this.repository.remove(objPointVote[0]);
+    }
 
     if (!objPointVote[0]) {
       const newPointVote = new PointVote();
