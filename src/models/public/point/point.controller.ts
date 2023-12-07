@@ -109,7 +109,7 @@ export class PointController {
   async search(
     @Headers('authorization') authorization: string,
     @Query() query: PaginatedDto,
-    @Ip() ip,
+    // @Ip() ip,
     @Body() search: { text: string },
   ): Promise<Pagination<Point>> {
     const response = await this.service.search(
@@ -118,12 +118,12 @@ export class PointController {
       authorization,
     );
 
-    await this.accessService.create(
-      AccessHelper.ACTION.VIEWED,
-      'user',
-      authorization,
-      ip,
-    );
+    // await this.accessService.create(
+    //   AccessHelper.ACTION.VIEWED,
+    //   'user',
+    //   authorization,
+    //   ip,
+    // );
 
     return response;
   }

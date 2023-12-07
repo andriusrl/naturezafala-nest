@@ -22,7 +22,7 @@ export class PointService {
   ): Promise<Pagination<Point>> {
     const objToken = await this.tokenService.findOne(authorization);
 
-    if (objToken?.user?.type <= 2) {
+    if (objToken?.user?.type >= 3) {
       throw new NotFoundException(`Not authorized`);
     }
 
