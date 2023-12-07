@@ -12,7 +12,7 @@ export class PointVoteService {
     private readonly repository: Repository<PointVote>,
     @Inject(TokenService)
     private readonly tokenService: TokenService,
-  ) { }
+  ) {}
 
   async findAll(): Promise<PointVote[]> {
     return this.repository.find();
@@ -44,7 +44,9 @@ export class PointVoteService {
       ])
       .leftJoin('pointvote.point', 'point')
       .leftJoin('point.user', 'user')
-      .groupBy('point.user, user.id, user.name, user.birthDate, user.fone, user.cpf, user.email, user.type, user.password, user.status')
+      .groupBy(
+        'point.user, user.id, user.name, user.birthDate, user.fone, user.cpf, user.email, user.type, user.password, user.status',
+      )
       // .groupBy('point.user, pointvote.point, point.id, user.id, user.name, user.birthDate, user.fone') // Agrupe por usuário e ponto
       .orderBy({ count: 'DESC' });
 
@@ -97,7 +99,10 @@ export class PointVoteService {
           vote: responseUser[0][0]?.vote,
         };
       }
-
+      return {
+        true: response[0][1],
+        false: response[1][1],
+      };
     } catch (e) {
       return { true: response[0][1], false: response[1][1] };
     }
