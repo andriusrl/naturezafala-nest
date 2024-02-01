@@ -6,6 +6,10 @@ Software como pré-requisito para
 obtenção do título de Bacharel em
 Engenharia de Software.
 
+## Video
+
+https://drive.google.com/file/d/1wNHAuSysaDedr2z69eKDIH0yhpK2hiF8/view?usp=sharing
+
 ## Installation
 
 ```bash
